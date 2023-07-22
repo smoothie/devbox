@@ -4,9 +4,8 @@ Yet another Ansible playbook for local development environment automation.
 
 ## Development Status
 
-> :warning: **This project is currently in development and is not yet production-ready.** It is a work in progress, and
-> there may be
-> incomplete features or known issues. Use it at your own risk.
+> :warning: **This project is currently in development and is not yet production-ready.** It is a 
+> work in progress, and there may be incomplete features or known issues. Use it at your own risk.
 
 ## Table of Contents
 
@@ -20,8 +19,9 @@ Yet another Ansible playbook for local development environment automation.
 
 ## Project Description
 
-As a web developer, I know the importance of a smooth local development environment. That's why I created smoothie's
-Devbox—an Ansible playbook that does the heavy lifting for me... and maybe for you too.
+As a web developer, I know the importance of a smooth local development environment. That's why 
+I created smoothie's Devbox—an Ansible playbook that does the heavy lifting for me... and maybe 
+for you too.
 
 ## Features
 
@@ -69,7 +69,8 @@ Devbox—an Ansible playbook that does the heavy lifting for me... and maybe for
     - [ ] Meilisearch
     - [ ] Minio
     - [ ] Prometheus
-- [x] **Streamlined Project Organization:** Dedicated vendor folder for each client, ensuring a well-organized and clean structure.
+- [x] **Streamlined Project Organization:** Dedicated vendor folder for each client, ensuring a 
+  well-organized and clean structure.
 - [x] **Simple Environment Setup:** No fuss, no stress – just smooth sailing!
 
 ### TODO
@@ -94,11 +95,12 @@ TBD
 
 ## Contributing
 
-Contributions are one thing that make the open source community such an amazing place to learn, inspire, and create. Any
-contributions you make are greatly appreciated.
+Contributions are one thing that make the open source community such an amazing place to learn, 
+inspire, and create. Any contributions you make are greatly appreciated.
 
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also
-simply open an issue with the tag "enhancement". Don't forget to give the project a star! Thanks again!
+If you have a suggestion that would make this better, please fork the repo and create a pull 
+request. You can also simply open an issue with the tag "enhancement". Don't forget to give the 
+project a star! Thanks again!
 
 1. Fork the Project
 2. Create your Feature Branch (git checkout -b feature/AmazingFeature)
