@@ -1,0 +1,67 @@
+- name: Install apache2
+  apt:
+    name:
+      - apache2
+    state: present
+  tags:
+    - apache2_setup
+
+- name: Replace apache2 user in envvars
+  lineinfile:
+    path: /etc/apache2/envvars
+    regexp: "^(export APACHE_RUN_USER=).*$"
+    line: "export APACHE_RUN_USER={{ apache2_user }}"
+  notify: Reload apache2 service
+  tags:
+    - apache_setup
+
+- name: Replace apache2 group in envvars
+  lineinfile:
+    path: /etc/apache2/envvars
+    regexp: "^(export APACHE_RUN_USER=).*$"
+    line: "export APACHE_RUN_USER={{ apache2_group }}"
+  notify: Reload apache2 service
+  tags:
+    - apache_setup
+
+- name: Add the user to the group
+  user:
+    name: "{{ apache2_user }}"
+    groups: "{{ apache2_group }}"
+    append: yes
+  tags:
+    - apache2_setup
+
+- name: Enable mod_proxy_fcgi
+  community.general.apache2_module:
+    state: present
+    name: proxy_fcgi
+  tags:
+    - apache2_setup
+
+- name: Configure sites (default)
+  template:
+    src: sites-available/000-default.conf.j2
+    dest: /etc/apache2/sites-available/{{ item.key }}.conf
+  loop: "{{ apache2_sites | dict2items }}"
+  notify: Reload apache2 service
+  tags:
+    - apache2_setup
+
+- name: Enable vhost
+  command: a2ensite "{{ item.key }}.conf"
+  loop: "{{ apache2_sites | dict2items }}"
+  register: apache2_output_vhost_enabled
+  notify: Reload apache2 service
+  changed_when:
+    - "'already enabled' not in apache2_output_vhost_enabled.stdout"
+  tags:
+    - apache2_setup
+
+- name: Start apache2 service
+  service:
+    name: apache2
+    state: started
+    enabled: true
+  tags:
+    - apache2_setup

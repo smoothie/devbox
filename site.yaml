@@ -1,0 +1,40 @@
+#!/usr/bin/env ansible-playbook
+---
+- hosts: webservers
+  connection: local
+  become: false
+  roles:
+    - role: common
+      become: true
+      tags:
+        - common
+
+    - role: php
+      become: true
+      vars:
+        php_user: "{{ host_user }}"
+        php_group: "{{ host_group }}"
+      when: webservers_stack.php | default(true)
+      tags:
+        - php
+
+    - role: apache2
+      become: true
+      vars:
+        apache2_user: "{{ host_user }}"
+        apache2_group: "{{ host_group }}"
+      when: webservers_stack.apache2 | default(true)
+      tags:
+        - apache2
+
+  tasks:
+    - name: Install MariaDB
+      apt:
+        name: mariadb-server
+        state: present
+
+    - name: Configure and start MariaDB
+      service:
+        name: mysql
+        state: started
+        enabled: true

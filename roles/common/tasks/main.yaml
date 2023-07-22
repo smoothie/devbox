@@ -1,0 +1,22 @@
+---
+- name: Make $host_user root
+  user:
+    name: "{{ common_user }}"
+    groups: sudo
+    append: yes
+  tags:
+    - common_setup
+
+- name: Add .bash_aliases
+  template:
+    src: aliases
+    dest: "/home/{{ common_user }}/.bash_aliases"
+  tags:
+    - common_setup
+
+- name: Install common packages
+  apt:
+      name: "{{ common_packages | join(',') }}"
+      state: present
+  tags:
+    - common_setup

@@ -1,0 +1,8 @@
+---
+apache2_document_root: /var/www/html
+apache2_server_admin: webmaster@localhost
+apache2_server_aliases:
+  - localhost
+apache2_logs_directory: ${APACHE_LOG_DIR}
+apache2_group: www-data
+apache2_user: www-data

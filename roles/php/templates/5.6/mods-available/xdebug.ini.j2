@@ -1,0 +1,7 @@
+zend_extension=xdebug.so
+xdebug.remote_enable = 1
+xdebug.remote_autostart = 1
+xdebug.remote_host = {{ php_xdebug.client_host }}
+xdebug.remote_port = {{ php_xdebug.client_port }}
+xdebug.max_nesting_level = {{ php_xdebug.max_nesting_level }}
+xdebug.idekey = {{ php_xdebug.idekey }}
