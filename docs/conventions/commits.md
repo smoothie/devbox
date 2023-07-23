@@ -3,8 +3,8 @@ Conventions: Commits
 
 ## Introduction
 
-In this project, we follow the Conventional Commits specification [v1.0.0][conventional_commits_v1_0_0] to structure our commit 
-messages.
+In this project, we follow the Conventional Commits specification [v1.0.0][conventional_commits_v1_0_0] 
+to structure our commit messages.
 
 Conventional Commits provide a consistent and standardized way to format commit messages, making it
 easier to understand the nature of changes in the codebase.
@@ -67,7 +67,7 @@ easier for developers and contributors to understand the nature of changes made 
 
 ## Resources
 - [Conventional Commits v1.0.0][conventional_commits_v1_0_0]
-- [How to Write a Git Commit Message](https://cbea.ms/git-commit/)
+- [How to Write a Git Commit Message by cbeams](https://cbea.ms/git-commit/)
 
 
 [conventional_commits_v1_0_0]: https://www.conventionalcommits.org/en/v1.0.0/
