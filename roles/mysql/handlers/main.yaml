@@ -1,0 +1,7 @@
+---
+-   name: Restart MySQL service
+    service:
+        name: mysql
+        state: restarted
+    tags:
+        - mysql_handler_restarted

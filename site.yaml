@@ -18,6 +18,18 @@
       tags:
         - php
 
+    - role: mysql
+      become: true
+      when: webservers_stack.mysql | default(false)
+      tags:
+        - mysql
+
+    - role: mariadb
+      become: true
+      when: webservers_stack.mariadb | default(true)
+      tags:
+        - mariadb
+
     - role: apache2
       become: true
       vars:
@@ -26,15 +38,3 @@
       when: webservers_stack.apache2 | default(true)
       tags:
         - apache2
-
-  tasks:
-    - name: Install MariaDB
-      apt:
-        name: mariadb-server
-        state: present
-
-    - name: Configure and start MariaDB
-      service:
-        name: mysql
-        state: started
-        enabled: true

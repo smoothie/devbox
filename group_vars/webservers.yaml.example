@@ -2,23 +2,27 @@
 webservers_stack:
     php: true
     apache2: true
-    mariadb: true
+    mariadb: false
+    mysql: true
 
 apache2_sites:
-  localhost:
-      apache2_document_root: /var/www/html
-      apache2_server_admin: webmaster@localhost
-      apache2_server_aliases:
-        - localhost
-      php_version: "8.2"
+    localhost:
+        apache2_document_root: /var/www/html
+        apache2_server_admin: webmaster@localhost
+        apache2_server_aliases:
+            - localhost
+        php_version: "8.2"
 
-  some-example.local.test:
-      apache2_document_root: /home/vagrant/ansible-devbox/public
-      apache2_server_admin: webmaster@localhost
-      apache2_server_aliases:
-        - some-example.local.test
-        - www.some-example.local.test
-      php_version: "8.2"
+    some-example.local.test:
+        apache2_document_root: /home/vagrant/ansible-devbox/public
+        apache2_server_admin: webmaster@localhost
+        apache2_server_aliases:
+            - some-example.local.test
+            - www.some-example.local.test
+        php_version: "8.2"
+
+mysql_databases:
+    - devbox
 
 #php_versions:
 #  - "8.3"

@@ -16,3 +16,7 @@ common_packages:
   - "vim"
   - "whois"
   - "zsh"
+  - "python3-pip"
+  - "python3-dev"
+  - "default-libmysqlclient-dev"
+  - "net-tools"

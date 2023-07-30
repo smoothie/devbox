@@ -1,0 +1,37 @@
+---
+mysql_system_user: mysql
+mysql_unix_socket: /var/run/mysqld/mysqld.sock
+mysql_port: 3306
+mysql_data_directory: /var/lib/mysql
+mysql_bind_address: 0.0.0.0
+mysql_bind_address_mysqlx: 0.0.0.0
+mysql_key_buffer_size: 16M
+mysql_max_allowed_packet: 64M
+mysql_thread_stack: 256K
+mysql_max_connections: 15
+mysql_log_error: /var/log/mysql/error.log
+mysql_max_binlog_size: 100M
+mysql_myisam_recover_options: BACKUP
+
+mysql_root_user: root
+mysql_root_password: secret
+
+mysql_users:
+    root:
+        password: secret
+        host: 127.0.0.1
+        path: /root/.my.cnf
+        # no need to rewrite root privileges, as root should only be accessible from the machine
+
+    devman:
+        password: secret
+        host: 127.0.0.1
+        path: /home/{{ host_user }}/.my.cnf
+        privileges: '*.*:ALL,GRANT/0.0.0.0:ALL,GRANT'
+
+mysql_paths:
+    mysqld_config: /etc/mysql/mysql.conf.d/mysqld.cnf
+
+mysql_packages:
+    - mysql-server
+    - mysql-client

@@ -1,0 +1,65 @@
+---
+-   name: Install MySQL packages
+    apt:
+        name: "{{ mysql_packages }}"
+        state: present
+    tags:
+        - mysql_setup
+
+-   name: Start MySQL service
+    service:
+        name: mysql
+        state: started
+        enabled: yes
+    tags:
+        - mysql_setup
+
+-   name: Set root PW
+    community.mysql.mysql_user:
+        name: "{{ mysql_root_user }}"
+        password: "{{ mysql_root_password }}"
+        login_user: "{{ mysql_root_user }}"
+        login_password: ""
+        login_unix_socket: "{{ mysql_unix_socket }}"
+        state: present
+    tags:
+        - mysql_setup
+
+-   name: Replace users my.cnf
+    template:
+        src: user.cnf.j2
+        dest: "{{ item.value.path }}"
+    loop: "{{ mysql_users | dict2items | selectattr('value.path') | list }}"
+    no_log: true
+    tags:
+        - mysql_setup
+
+-   name: Replace mysqld.cnf
+    template:
+        src: mysqld.cnf.j2
+        dest: "{{ mysql_paths.mysqld_config }}"
+    notify: Restart MySQL service
+    tags:
+        - mysql_setup
+
+-   name: Create privileged DB users
+    community.mysql.mysql_user:
+        host: '%'
+        name: "{{ item.key }}"
+        password: "{{ item.value.password }}"
+        priv: "{{ item.value.privileges }}"
+        state: present
+    loop: "{{ mysql_users | dict2items | selectattr('value.privileges', 'defined') | list }}"
+    no_log: true
+    tags:
+        - mysql_setup
+
+-   name: Create $mysql_databases
+    community.mysql.mysql_db:
+        name: "{{ mysql_databases }}"
+        state: present
+        login_unix_socket: "{{ mysql_unix_socket }}"
+    when:
+        - mysql_databases is defined
+    tags:
+        - mysql_setup
