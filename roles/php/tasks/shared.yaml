@@ -1,20 +1,20 @@
 ---
-- name: Initialize $php_versions as an empty array when not defined
-  set_fact:
-      php_versions: "{{ php_versions | default([]) }}"
-  tags:
-    - php_setup
-    - debug
+-   name: Initialize $php_versions as an empty array when not defined
+    set_fact:
+        php_versions: "{{ php_versions | default([]) }}"
+    tags:
+        - php_setup
+        - debug
 
-- name: Extract $php_versions from apache2_sites
-  set_fact:
-      php_versions: "{{ php_versions | default([]) + [item.value.php_version] }}"
-  loop: "{{ apache2_sites | dict2items }}"
-  loop_control:
-    label: "{{ item.key }}"
-  when:
-    - item.value.php_version is defined
-    - item.value.php_version not in php_versions
-  tags:
-    - php_setup
-    - debug
+-   name: Extract $php_versions from apache2_sites
+    set_fact:
+        php_versions: "{{ php_versions | default([]) + [item.value.php_version] }}"
+    loop: "{{ apache2_sites | dict2items }}"
+    loop_control:
+        label: "{{ item.key }}"
+    when:
+        - item.value.php_version is defined
+        - item.value.php_version not in php_versions
+    tags:
+        - php_setup
+        - debug

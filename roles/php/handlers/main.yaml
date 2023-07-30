@@ -1,8 +1,8 @@
 ---
-- name: Restart PHP-FPM service
-  service:
-    name: "php{{ item }}-fpm"
-    state: restarted
-  loop: "{{ php_versions }}"
-  tags:
-    php_handler_fpm_restarted
+-   name: Restart PHP-FPM service
+    service:
+        name: "php{{ item }}-fpm"
+        state: restarted
+    loop: "{{ php_versions }}"
+    tags:
+        php_handler_fpm_restarted

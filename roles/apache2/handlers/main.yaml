@@ -1,7 +1,7 @@
 ---
-- name: Reload apache2 service
-  service:
-    name: apache2
-    state: reloaded
-  tags:
-    apache2_handler_reload
+-   name: Reload apache2 service
+    service:
+        name: apache2
+        state: reloaded
+    tags:
+        apache2_handler_reload

@@ -1,11 +1,11 @@
 ---
-- name: Install MariaDB
-  apt:
-    name: mariadb-server
-    state: present
+-   name: Install MariaDB
+    apt:
+        name: mariadb-server
+        state: present
 
-- name: Configure and start MariaDB
-  service:
-    name: mysql
-    state: started
-    enabled: true
+-   name: Configure and start MariaDB
+    service:
+        name: mysql
+        state: started
+        enabled: true
