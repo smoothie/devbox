@@ -22,7 +22,10 @@ apache2_sites:
         php_version: "8.2"
 
 mysql_databases:
-    - devbox
+    - devbox_mysql
+
+mariadb_databases:
+    - devbox_mariadb
 
 #php_versions:
 #  - "8.3"

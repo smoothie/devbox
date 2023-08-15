@@ -1,11 +1,65 @@
 ---
--   name: Install MariaDB
+-   name: Install MariaDB packages
     apt:
-        name: mariadb-server
+        name: "{{ mariadb_packages }}"
         state: present
+    tags:
+        - mariadb_setup
 
--   name: Configure and start MariaDB
+-   name: Start MariaDB service
     service:
-        name: mysql
+        name: mariadb
         state: started
-        enabled: true
+        enabled: yes
+    tags:
+        - mariadb_setup
+
+-   name: Set root PW
+    community.mysql.mysql_user:
+        name: "{{ mariadb_root_user }}"
+        password: "{{ mariadb_root_password }}"
+        login_user: "{{ mariadb_root_user }}"
+        login_password: ""
+        login_unix_socket: "{{ mariadb_unix_socket }}"
+        state: present
+    tags:
+        - mariadb_setup
+
+-   name: Replace users my.cnf
+    template:
+        src: user.cnf.j2
+        dest: "{{ item.value.path }}"
+    loop: "{{ mariadb_users | dict2items | selectattr('value.path') | list }}"
+    no_log: true
+    tags:
+        - mariadb_setup
+
+-   name: Replace mysqld.cnf
+    template:
+        src: mysqld.cnf.j2
+        dest: "{{ mariadb_paths.mysqld_config }}"
+    notify: Restart MariaDB service
+    tags:
+        - mariadb_setup
+
+-   name: Create privileged DB users
+    community.mysql.mysql_user:
+        host: '%'
+        name: "{{ item.key }}"
+        password: "{{ item.value.password }}"
+        priv: "{{ item.value.privileges }}"
+        state: present
+    loop: "{{ mariadb_users | dict2items | selectattr('value.privileges', 'defined') | list }}"
+    no_log: true
+    tags:
+        - mariadb_setup
+
+-   name: Create $mariadb_databases
+    community.mysql.mysql_db:
+        name: "{{ mariadb_databases }}"
+        state: present
+        login_unix_socket: "{{ mariadb_unix_socket }}"
+    when:
+        - mariadb_databases is defined
+    tags:
+        - mariadb_setup

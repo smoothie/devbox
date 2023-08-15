@@ -16,36 +16,36 @@ import_helper_function() {
 import_helper_function "log_message.sh"
 import_helper_function "display_warning.sh"
 
-display_warning "This action removes MySQL packages, databases and data. Are you sure to continue?" "$@"
+display_warning "This action removes MariaDB packages, databases and data. Are you sure to continue?" "$@"
 
 # Are we root?
 if [ "$EUID" -ne 0 ]; then
-    log_message "ERROR" "Insufficient permissions to remove MySQL configuration and data."
+    log_message "ERROR" "Insufficient permissions to remove MariaDB configuration and data."
 
     exit 1
 fi
 
-# Uninstall all MySQL-related packages
-if dpkg -l | grep -q '^ii.*mysql-'; then
-    apt-get remove --purge -y '^mysql-'
+# Uninstall all MariaDB-related packages
+if dpkg -l | grep -q '^ii.*mariadb-'; then
+    DEBIAN_FRONTEND=noninteractive apt-get remove --purge -yq '^mariadb-'
     apt-get autoremove -y
 else
-    log_message "INFO" "No MySQL-related packages found."
+    log_message "INFO" "No MariaDB-related packages found."
 fi
 
-# Remove MySQL configuration and data
+# Remove MariaDB configuration and data
 if [ -d /etc/mysql ] || [ -d /var/lib/mysql ]; then
     # Check for permissions before removing files
     if [ -w /etc/mysql ] && [ -w /var/lib/mysql ]; then
         rm -r /etc/mysql /var/lib/mysql
-        log_message "INFO" "MySQL configuration and data have been removed."
+        log_message "INFO" "MariaDB configuration and data have been removed."
     else
-        log_message "WARNING" "Insufficient permissions to remove MySQL configuration and data."
+        log_message "WARNING" "Insufficient permissions to remove MariaDB configuration and data."
     fi
 else
-    log_message "INFO" "MySQL configuration and data directories not found."
+    log_message "INFO" "MariaDB configuration and data directories not found."
 fi
 
-log_message "INFO" "MySQL uninstall process completed on $(date)."
+log_message "INFO" "MariaDB uninstall process completed on $(date)."
 
 # Note: that this script does not not purge log files, future references

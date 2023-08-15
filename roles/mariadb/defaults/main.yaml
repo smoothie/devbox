@@ -1,0 +1,39 @@
+---
+mariadb_system_user: mysql
+mariadb_unix_socket: /var/run/mysqld/mysqld.sock
+mariadb_pid_file: /var/run/mysqld/mysqld.pid
+mariadb_port: 3306
+mariadb_data_directory: /var/lib/mysql
+mariadb_bind_address: 0.0.0.0
+mariadb_key_buffer_size: 16M
+mariadb_max_allowed_packet: 64M
+mariadb_thread_stack: 256K
+mariadb_max_connections: 15
+mariadb_log_error: /var/log/mysql/error.log
+mariadb_max_binlog_size: 100M
+mariadb_myisam_recover_options: BACKUP
+mariadb_character_set_server: utf8mb4
+mariadb_collation_server: utf8mb4_general_ci
+
+mariadb_root_user: root
+mariadb_root_password: secret
+
+mariadb_users:
+    root:
+        password: secret
+        host: 127.0.0.1
+        path: /root/.my.cnf
+        # no need to rewrite root privileges, as root should only be accessible from the machine
+
+    devman:
+        password: secret
+        host: 127.0.0.1
+        path: /home/{{ host_user }}/.my.cnf
+        privileges: '*.*:ALL,GRANT/0.0.0.0:ALL,GRANT'
+
+mariadb_paths:
+    mysqld_config: /etc/mysql/mariadb.conf.d/50-server.cnf
+
+mariadb_packages:
+    - mariadb-server
+    - mariadb-client

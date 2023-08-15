@@ -1,0 +1,7 @@
+---
+-   name: Restart MariaDB service
+    service:
+        name: mariadb
+        state: restarted
+    tags:
+        - mariadb_handler_restarted
