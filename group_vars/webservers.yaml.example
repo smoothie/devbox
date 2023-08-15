@@ -31,6 +31,16 @@ mariadb_databases:
 
 golang_version: 1.21.0
 
+java_packages:
+    - openjdk-18-jre
+    - openjdk-18-jdk
+    - openjdk-18-demo
+    - openjdk-18-doc
+    - openjdk-18-jre-headless
+    - openjdk-18-source
+
+java_home: ""
+
 #php_versions:
 #  - "8.3"
 #  - "8.2"

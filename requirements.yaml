@@ -1,3 +1,6 @@
 ---
 - name: gantsign.golang
   version: 3.2.0
+
+- name: geerlingguy.java
+  version: 2.3.1

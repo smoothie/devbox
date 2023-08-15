@@ -39,8 +39,11 @@ for you too.
       - [ ] Deno (via dvm)
       - [x] npm (via nvm)
       - [ ] yarn
-    - [ ] Go
-    - [ ] Java
+    - [x] Go
+    - [x] Java
+      - [ ] Gradle
+      - [ ] Ivy
+      - [ ] Maven
     - [ ] Python
   - Database
     - [x] MySQL

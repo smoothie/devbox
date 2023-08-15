@@ -52,3 +52,9 @@
             when: webservers_stack.golang | default(false)
             tags:
                 - golang
+
+        -   role: geerlingguy.java
+            become: true
+            when: webservers_stack.java | default(false)
+            tags:
+                - java
