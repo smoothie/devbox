@@ -34,19 +34,19 @@ for you too.
     - [x] PHP (5.6 - 8.3)
       - [x] XDebug support
       - [ ] Composer
-    - [ ] JavaScript
-      - [ ] Node.js (via nvm)
+    - [x] JavaScript
+      - [x] Node.js (via nvm)
       - [ ] Deno (via dvm)
-      - [ ] npm
+      - [x] npm (via nvm)
       - [ ] yarn
     - [ ] Go
     - [ ] Java
     - [ ] Python
   - Database
-    - [ ] MySQL
-    - [ ] MariaDB
+    - [x] MySQL
+    - [x] MariaDB
     - [ ] PostgreSQL
-    - [ ] NoSQL
+    - [ ] SQLite
     - [ ] CouchDB
     - [ ] MongoDB
     - [ ] Redis

@@ -38,3 +38,12 @@
             when: webservers_stack.apache2 | default(true)
             tags:
                 - apache2
+
+        -   role: nvm
+            become: true
+            vars:
+                nvm_user: "{{ host_user }}"
+                nvm_group: "{{ host_group }}"
+            when: webservers_stack.nvm | default(true)
+            tags:
+                - nvm

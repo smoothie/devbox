@@ -1,0 +1,21 @@
+---
+-   name: Download nvm installer
+    get_url:
+        url: https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.4/install.sh
+        dest: /tmp/nvm-installer.sh
+        mode: 0777
+    tags:
+        - nvm_setup
+
+-   name: Execute the nvm-installer.sh
+    shell: /tmp/nvm-installer.sh
+    become_user: "{{ nvm_user }}"
+    tags:
+        - nvm_setup
+
+-   name: Remove nvm-installer.sh
+    file:
+        path: /tmp/nvm-installer.sh
+        state: absent
+    tags:
+        - nvm_setup

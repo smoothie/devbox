@@ -4,6 +4,7 @@ webservers_stack:
     apache2: true
     mariadb: false
     mysql: true
+    nvm: true
 
 apache2_sites:
     localhost:
