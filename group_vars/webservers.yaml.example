@@ -5,6 +5,7 @@ webservers_stack:
     mariadb: false
     mysql: true
     nvm: true
+    golang: false
 
 apache2_sites:
     localhost:
@@ -27,6 +28,8 @@ mysql_databases:
 
 mariadb_databases:
     - devbox_mariadb
+
+golang_version: 1.21.0
 
 #php_versions:
 #  - "8.3"
