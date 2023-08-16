@@ -7,6 +7,7 @@ webservers_stack:
     nvm: true
     golang: false
     redis: false
+    memcached: false
 
 apache2_sites:
     localhost:

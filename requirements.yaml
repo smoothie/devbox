@@ -7,3 +7,6 @@
 
 - name: geerlingguy.redis
   version: 1.8.0
+
+- name: geerlingguy.memcached
+  version: 2.2.0

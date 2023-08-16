@@ -64,3 +64,9 @@
             when: webservers_stack.redis | default(false)
             tags:
                 - redis
+
+        -   role: geerlingguy.memcached
+            become: true
+            when: webservers_stack.memcached | default(false)
+            tags:
+                - memcached
