@@ -58,3 +58,9 @@
             when: webservers_stack.java | default(false)
             tags:
                 - java
+
+        -   role: geerlingguy.redis
+            become: true
+            when: webservers_stack.redis | default(false)
+            tags:
+                - redis

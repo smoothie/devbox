@@ -52,7 +52,7 @@ for you too.
     - [ ] SQLite
     - [ ] CouchDB
     - [ ] MongoDB
-    - [ ] Redis
+    - [x] Redis
     - [ ] Memcached
     - [ ] InfluxDB
   - Messaging

@@ -6,6 +6,7 @@ webservers_stack:
     mysql: true
     nvm: true
     golang: false
+    redis: false
 
 apache2_sites:
     localhost:
