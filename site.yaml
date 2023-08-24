@@ -9,6 +9,20 @@
             tags:
                 - common
 
+        -   role: geerlingguy.git
+            become: true
+            vars:
+                workspace: "{{ git_workspace | default(/root) }}"
+            when: webservers_stack.git | default(true)
+            tags:
+                - git
+
+        -   role: git-config
+            when: webservers_stack.git | default(true)
+            tags:
+                - git
+                - git_config
+
         -   role: php
             become: true
             vars:
@@ -17,6 +31,13 @@
             when: webservers_stack.php | default(true)
             tags:
                 - php
+
+        -   role: geerlingguy.composer
+            become: true
+            when: webservers_stack.php | default(true)
+            tags:
+                - php
+                - php_composer
 
         -   role: mysql
             become: true
@@ -70,23 +91,3 @@
             when: webservers_stack.memcached | default(false)
             tags:
                 - memcached
-
-        -   role: geerlingguy.git
-            become: true
-            vars:
-                workspace: "{{ git_workspace | default(/root) }}"
-            when: webservers_stack.git | default(false)
-            tags:
-                - git
-
-        -   role: git-config
-            when: webservers_stack.git | default(false)
-            tags:
-                - git
-                - git_config
-
-        -   role: geerlingguy.composer
-            become: true
-            when: webservers_stack.php | default(true)
-            tags:
-                - composer
