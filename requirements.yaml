@@ -13,3 +13,6 @@
 
 - name: geerlingguy.git
   version: 3.0.1
+
+- name: geerlingguy.composer
+  version: 1.9.2

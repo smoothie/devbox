@@ -84,3 +84,9 @@
             tags:
                 - git
                 - git_config
+
+        -   role: geerlingguy.composer
+            become: true
+            when: webservers_stack.php | default(true)
+            tags:
+                - composer

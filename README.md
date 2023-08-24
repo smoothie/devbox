@@ -33,7 +33,7 @@ for you too.
   - Code
     - [x] PHP (5.6 - 8.3)
       - [x] XDebug support
-      - [ ] Composer
+      - [x] Composer
     - [x] JavaScript
       - [x] Node.js (via nvm)
       - [ ] Deno (via dvm)
@@ -78,11 +78,6 @@ for you too.
 
 ### TODO
 
-- [x] Fix Xdebug config for Xdebug 2 (php: 5.6, 7.0, 7.1).
-    - Fixed: Add missing php5.6-xdebug packages on defaults :facepalm:
-- [x] Extract common:git into separate role
-    - [x] Set defaults (git user, mail, global gitignore, default branch name)
-    - git config --global init.defaultBranch
 - [ ] Support self-signed apache2 vhosts
 - [ ] Fix apache2, php, user permissions
     - Context: Currently we rewrite apache, php user to vagrant:vagrant.  

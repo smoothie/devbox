@@ -50,6 +50,13 @@ git_config_user:
     name: vagrant
     email: some@example.com
 
+composer_keep_updated: true
+composer_home_path: '/home/vagrant/.composer'
+composer_home_owner: vagrant
+composer_home_group: vagrant
+composer_global_packages:
+    - { name: ergebnis/composer-normalize }
+
 #php_versions:
 #  - "8.3"
 #  - "8.2"
