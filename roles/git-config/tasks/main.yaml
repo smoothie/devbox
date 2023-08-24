@@ -1,0 +1,51 @@
+---
+-   name: Set git user email
+    community.general.git_config:
+        name: user.email
+        scope: global
+        value: "{{ git_config_user.email }}"
+    when:
+        - git_config_user.email is defined
+    tags:
+        - git_config
+
+-   name: Set git user name
+    community.general.git_config:
+        name: user.name
+        scope: global
+        value: "{{ git_config_user.name }}"
+    when:
+        - git_config_user.name is defined
+    tags:
+        - git_config
+
+-   name: Set auto line endings
+    community.general.git_config:
+        name: core.autocrlf
+        scope: global
+        value: "{{ git_config_core.autocrlf }}"
+    tags:
+        - git_config
+
+-   name: Set global .gitignore file
+    community.general.git_config:
+        name: core.excludesfile
+        scope: global
+        value: "{{ git_config_core.excludesfile }}"
+    tags:
+        - git_config
+
+-   name: Replace global .gitignore
+    template:
+        src: .gitignore.j2
+        dest: "{{ git_config_core.excludesfile }}"
+    tags:
+        - git_config
+
+-   name: Set default branch name
+    community.general.git_config:
+        name: init.defaultBranch
+        scope: global
+        value: "{{ git_config_init.defaultBranch }}"
+    tags:
+        - git_config

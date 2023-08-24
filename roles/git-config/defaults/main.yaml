@@ -1,0 +1,16 @@
+---
+git_config_core:
+    excludesfile: /home/vagrant/.gitignore
+    autocrlf: true
+
+git_config_init:
+    defaultBranch: main
+
+git_config_excludesfile_items:
+    - ".idea/"
+    - ".vscode/"
+    - ".DS_Store"
+    - "Thumbs.db"
+    - "npm-debug.log"
+    - "*~"
+    - "*.log"

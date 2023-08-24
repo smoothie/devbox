@@ -10,3 +10,6 @@
 
 - name: geerlingguy.memcached
   version: 2.2.0
+
+- name: geerlingguy.git
+  version: 3.0.1

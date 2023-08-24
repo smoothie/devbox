@@ -70,3 +70,17 @@
             when: webservers_stack.memcached | default(false)
             tags:
                 - memcached
+
+        -   role: geerlingguy.git
+            become: true
+            vars:
+                workspace: "{{ git_workspace | default(/root) }}"
+            when: webservers_stack.git | default(false)
+            tags:
+                - git
+
+        -   role: git-config
+            when: webservers_stack.git | default(false)
+            tags:
+                - git
+                - git_config

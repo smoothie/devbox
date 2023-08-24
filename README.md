@@ -67,7 +67,7 @@ for you too.
   - Others
     - [ ] Apache Solr
     - [ ] Blackfire
-    - [ ] Git
+    - [x] Git
     - [ ] Grafana
     - [ ] Meilisearch
     - [ ] Minio
@@ -80,8 +80,8 @@ for you too.
 
 - [x] Fix Xdebug config for Xdebug 2 (php: 5.6, 7.0, 7.1).
     - Fixed: Add missing php5.6-xdebug packages on defaults :facepalm:
-- [ ] Extract common:git into separate role
-    - [ ] Set defaults (git user, mail, global gitignore, default branch name)
+- [x] Extract common:git into separate role
+    - [x] Set defaults (git user, mail, global gitignore, default branch name)
     - git config --global init.defaultBranch
 - [ ] Support self-signed apache2 vhosts
 - [ ] Fix apache2, php, user permissions

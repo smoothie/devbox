@@ -8,6 +8,7 @@ webservers_stack:
     golang: false
     redis: false
     memcached: false
+    git: false
 
 apache2_sites:
     localhost:
@@ -42,6 +43,12 @@ java_packages:
     - openjdk-18-source
 
 java_home: ""
+
+git_workspace: /home/vagrant
+
+git_config_user:
+    name: vagrant
+    email: some@example.com
 
 #php_versions:
 #  - "8.3"
