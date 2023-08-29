@@ -52,7 +52,7 @@ this devbox.
     - [ ] CouchDB
     - [ ] MongoDB
     - [x] Redis
-    - [ ] Memcached
+    - [x] Memcached
     - [ ] InfluxDB
   - Messaging
     - [ ] Kafka
