@@ -4,3 +4,4 @@ ansible/*_vars/*.yml
 ansible/*_vars/*.yaml
 
 .vagrant/
+vagrant/*.json

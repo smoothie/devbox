@@ -1,0 +1,12 @@
+{
+    "hostname": "devbox",
+    "ip": "192.168.60.17",
+    "memory": "2048",
+    "cpus": 2,
+    "folders": [
+        {
+            "from": "../../some-project",
+            "to": "/home/vagrant/some-project"
+        }
+    ]
+}

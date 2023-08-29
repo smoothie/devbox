@@ -19,9 +19,8 @@ Yet another Ansible playbook for local development environment automation.
 
 ## Project Description
 
-As a web developer, I know the importance of a smooth local development environment. That's why 
-I created smoothie's Devbox—an Ansible playbook that does the heavy lifting for me... and maybe 
-for you too.
+As a developer, I enjoy a smooth local development environment. That's why I'm currently exploring 
+this devbox.
 
 ## Features
 
@@ -64,6 +63,10 @@ for you too.
     - [ ] Logstash
     - [ ] Kibana
     - [ ] Beats
+  - Virtualization
+    - [ ] Docker
+    - [ ] Kubernetes
+      - [ ] Podman
   - Others
     - [ ] Apache Solr
     - [ ] Blackfire
@@ -72,12 +75,12 @@ for you too.
     - [ ] Meilisearch
     - [ ] Minio
     - [ ] Prometheus
-- [x] **Streamlined Project Organization:** Dedicated vendor folder for each client, ensuring a 
-  well-organized and clean structure.
-- [x] **Simple Environment Setup:** No fuss, no stress – just smooth sailing!
 
 ### TODO
 
+- [ ] On new machines
+  - [ ] Setup pip3 PyMySQL (user and root) 
+  - [x] Install ansible-galaxy requirements.yaml
 - [ ] Support self-signed apache2 vhosts
 - [ ] Fix apache2, php, user permissions
     - Context: Currently we rewrite apache, php user to vagrant:vagrant.  
