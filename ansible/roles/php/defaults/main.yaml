@@ -15,7 +15,6 @@ php_xdebug:
     discover_client_host: 1
     idekey: PHPSTORM
     max_nesting_level: 512
-    start_with_request: true
 
 php_supported_versions:
     - "8.3"
