@@ -78,9 +78,6 @@ this devbox.
 
 ### TODO
 
-- [ ] On new machines
-    - [x] Setup pip3 PyMySQL (user and root)
-    - [x] Install ansible-galaxy requirements.yaml
 - [ ] Support self-signed apache2 vhosts
 - [ ] Fix apache2, php, user permissions
     - Context: Currently we rewrite apache, php user to vagrant:vagrant.  
