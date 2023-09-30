@@ -5,3 +5,10 @@
         state: reloaded
     tags:
         apache2_handler_reload
+
+-   name: Restart apache2 service
+    service:
+        name: apache2
+        state: restarted
+    tags:
+        apache2_handler_reload

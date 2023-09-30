@@ -59,7 +59,7 @@
     command: a2ensite "{{ item.key }}.conf"
     loop: "{{ apache2_sites | dict2items }}"
     register: apache2_output_vhost_enabled
-    notify: Reload apache2 service
+    notify: Restart apache2 service
     changed_when:
         - "'already enabled' not in apache2_output_vhost_enabled.stdout"
     tags:
