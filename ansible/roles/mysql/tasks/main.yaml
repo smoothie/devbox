@@ -1,4 +1,11 @@
 ---
+-   name: Install PyMySQL via pip
+    ansible.builtin.pip:
+        name: PyMySQL
+        umask: "0022"
+    tags:
+        - mysql_setup
+
 -   name: Install MySQL packages
     apt:
         name: "{{ mysql_packages }}"
