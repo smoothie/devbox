@@ -39,6 +39,13 @@
     tags:
         - apache2_setup
 
+-   name: Enable mod_rewrite
+    community.general.apache2_module:
+        state: present
+        name: rewrite
+    tags:
+        - apache2_setup
+
 -   name: Configure sites (default)
     template:
         src: sites-available/000-default.conf.j2
