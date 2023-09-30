@@ -1,4 +1,11 @@
 ---
+-   name: Install PyMySQL via pip
+    ansible.builtin.pip:
+        name: PyMySQL
+        umask: "0022"
+    tags:
+        - mariadb_setup
+
 -   name: Install MariaDB packages
     apt:
         name: "{{ mariadb_packages }}"
