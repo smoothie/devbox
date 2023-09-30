@@ -56,6 +56,9 @@ composer_home_owner: vagrant
 composer_home_group: vagrant
 composer_global_packages:
     - { name: ergebnis/composer-normalize }
+    - { name: friendsofphp/php-cs-fixer }
+    - { name: phpmd/phpmd }
+    - { name: squizlabs/php_codesniffer }
 
 #php_versions:
 #  - "8.3"
