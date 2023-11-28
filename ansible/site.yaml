@@ -91,3 +91,13 @@
             when: webservers_stack.memcached | default(false)
             tags:
                 - memcached
+
+        -   role: geerlingguy.docker
+            become: true
+            vars:
+                docker_users: "{{ [ host_user ] + docker_config.users | default([]) | select() | list }}"
+                docker_install_compose: false
+                docker_install_compose_plugin: docker_config.install_compose | true
+            when: webservers_stack.docker | default(false)
+            tags:
+                - docker

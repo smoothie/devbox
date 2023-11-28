@@ -9,6 +9,7 @@ webservers_stack:
     redis: false
     memcached: false
     git: false
+    docker: false
 
 apache2_sites:
     localhost:
@@ -59,6 +60,11 @@ composer_global_packages:
     - { name: friendsofphp/php-cs-fixer }
     - { name: phpmd/phpmd }
     - { name: squizlabs/php_codesniffer }
+
+docker_config:
+    install_compose: true
+    users:
+        -
 
 #php_versions:
 #  - "8.3"

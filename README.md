@@ -64,7 +64,7 @@ this devbox.
         - [ ] Kibana
         - [ ] Beats
     - Virtualization
-        - [ ] Docker
+        - [x] Docker
         - [ ] Kubernetes
             - [ ] Podman
     - Others
