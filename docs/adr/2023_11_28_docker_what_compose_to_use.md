@@ -38,7 +38,7 @@ The idea is to integrate docker related CLI's, like the docker-compose, into the
 * Good. Uses same commands as docker-compose.
 * Good. Because it is the recommended way[¹][1].
 
-### Being strict of the choice: Yes
+### Being strict of the choice: No
 
 We got two options to use. So there is the question: Should we allow using both ways?
 
@@ -46,7 +46,7 @@ We got two options to use. So there is the question: Should we allow using both 
 * Bad. Those are two separate ways of how to install and handle each way. That might add complexity 
   of allowing both ways. While there is no real reason for allowing both ways.
 
-### Being strict of the choice: No
+### Being strict of the choice: Yes
 
 We got two options to use. So there is question: Should we allow using both ways?
 
@@ -58,7 +58,7 @@ We got two options to use. So there is question: Should we allow using both ways
 Chosen option: "[Use docker compose plugin](#use-docker-compose-plugin)", because it is simple and 
 the recommended way. So it is probably the long term stable option.
 
-Additional option: "[Being strict of the choice: No](#being-strict-of-the-choice-no)", because it comes with less complexity when 
+Additional option: "[Being strict of the choice: Yes](#being-strict-of-the-choice-yes)", because it comes with less complexity when 
 we only have one way to provide. Maybe at some point we learn that there are good reason's to allow 
 the docker-compose way... but for now YAGNI.
 
