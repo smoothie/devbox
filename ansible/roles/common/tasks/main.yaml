@@ -20,3 +20,13 @@
         state: present
     tags:
         - common_setup
+
+-   name: Keep bash_completion when suing
+    blockinfile:
+        path: /root/.bashrc
+        block: |
+            if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
+                . /etc/bash_completion
+            fi
+    tags:
+        - common_setup
