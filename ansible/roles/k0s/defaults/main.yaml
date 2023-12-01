@@ -1,0 +1,7 @@
+---
+k0s_bin_path: '/usr/local/bin/k0s'
+k0s_bash_completions_path: '/usr/share/bash-completion/completions/k0s'
+k0s_service_name: 'k0scontroller'
+k0s_version: 'v1.28.4+k0s.0'
+k0s_kube_config_template_path: '/var/lib/k0s/pki/admin.conf'
+k0s_kube_config_path: ''

@@ -64,9 +64,16 @@ this devbox.
         - [ ] Kibana
         - [ ] Beats
     - Virtualization
+        - [x] containerd
         - [x] Docker
-        - [ ] Kubernetes
-            - [ ] Podman
+        - [x] Kubernetes
+          - [x] via k0s
+          - [ ] via k3s
+          - [ ] via kind
+          - [ ] via kubeadm
+          - [ ] via minikube
+          - [ ] Podman
+          - [x] Helm
     - Others
         - [ ] Apache Solr
         - [ ] Blackfire

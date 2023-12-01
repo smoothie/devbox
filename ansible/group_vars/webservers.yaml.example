@@ -10,6 +10,9 @@ webservers_stack:
     memcached: false
     git: false
     docker: false
+    kubernetes: false
+    kubectl: false
+    helm: false
 
 apache2_sites:
     localhost:
@@ -63,8 +66,12 @@ composer_global_packages:
 
 docker_config:
     install_compose: true
+    apt_filename: "docker"
     users:
         -
+
+kubernetes_kube_config_path: '/root/k0s/k0s-admin.conf'
+kubernetes_distro: 'k0s'
 
 #php_versions:
 #  - "8.3"

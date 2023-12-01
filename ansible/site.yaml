@@ -98,6 +98,42 @@
                 docker_users: "{{ [ host_user ] + docker_config.users | default([]) | select() | list }}"
                 docker_install_compose: false
                 docker_install_compose_plugin: docker_config.install_compose | true
+                docker_apt_filename: "{{ docker_config.apt_filename | default(omit) }}"
             when: webservers_stack.docker | default(false)
             tags:
                 - docker
+
+        -   role: geerlingguy.containerd
+            become: true
+            vars:
+                containerd_config_cgroup_driver_systemd: true
+                docker_apt_filename: "{{ docker_config.apt_filename | default(omit) }}"
+            when: webservers_stack.kubernetes | default(false)
+            tags:
+                - kubernetes
+                - containerd
+
+        -   role: k0s
+            become: true
+            vars:
+                k0s_kube_config_path: "{{ kubernetes_kube_config_path }}"
+            when: webservers_stack.kubernetes | default(false) and kubernetes_distro == 'k0s' | default(false)
+            tags:
+                - kubernetes
+                - k0s
+
+        -   role: kubectl
+            become: true
+            vars:
+                kubectl_kube_config_path: "{{ kubernetes_kube_config_path }}"
+            when: webservers_stack.kubectl | default(false)
+            tags:
+                - kubernetes
+                - kubectl
+
+        -   role: geerlingguy.helm
+            become: true
+            when: webservers_stack.helm | default(false)
+            tags:
+                - kubernetes
+                - helm

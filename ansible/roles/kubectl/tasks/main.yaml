@@ -1,0 +1,69 @@
+---
+-   name: Check if kubectl binary exists
+    stat:
+        path: "{{ kubectl_bin_path }}"
+    register: kubectl_binary_exists
+    tags:
+        - kubectl_setup
+
+-   name: Check if kubectl bash completions exists
+    stat:
+        path: "{{ kubectl_bash_completions_path }}"
+    register: kubectl_bash_completion_file_exists
+    tags:
+        - kubectl_setup
+
+-   name: Download kubectl into temporary binary path
+    get_url:
+        url: "{{ kubectl_download_url_kubernetes }}"
+        dest: "{{ kubectl_tmp_bin_path }}"
+        mode: 0755
+    when: >
+        not kubectl_binary_exists.stat.exists
+    tags:
+        - kubectl_setup
+
+-   name: Copy temporary kubectl to binary path
+    copy:
+        remote_src: true
+        src: "{{ kubectl_tmp_bin_path }}"
+        dest: "{{ kubectl_bin_path }}"
+        mode: a+x
+    when: >
+        not kubectl_binary_exists.stat.exists
+    tags:
+        - kubectl_setup
+
+-   name: Check kubectl bash completion for changes
+    shell: "{{ kubectl_bin_path }} completion bash | cmp - {{ kubectl_bash_completions_path }}"
+    failed_when: false
+    changed_when: false
+    register: kubectl_has_bash_completion_changes
+    tags:
+        - kubectl_setup
+
+-   name: Add kubectl bash completions
+    shell: "{{ kubectl_bin_path }} completion bash > {{ kubectl_bash_completions_path }}"
+    when: >
+        not kubectl_bash_completion_file_exists.stat.exists
+        or kubectl_has_bash_completion_changes.stderr | length > 0
+    tags:
+        - kubectl_setup
+
+-   name: Export env KUBECONFIG
+    template:
+        src: kubeconfig.sh.j2
+        dest: /etc/profile.d/kubeconfig.sh
+        mode: 0644
+    when: kubectl_kube_config_path is defined and kubectl_kube_config_path
+    tags:
+        - kubectl_setup
+
+-   name: Keep KUBECONFIG when suing
+    blockinfile:
+        path: /root/.bashrc
+        block: "{{ lookup('template', 'kubeconfig.sh.j2') }}"
+        marker: "# {mark} Ansible(smoothie.kubectl): Keep KUBECONFIG when suing"
+    when: kubectl_kube_config_path is defined and kubectl_kube_config_path
+    tags:
+        - kubectl_setup

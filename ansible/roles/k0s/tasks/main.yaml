@@ -1,0 +1,110 @@
+---
+-   name: Check if k0s binary exists
+    stat:
+        path: "{{ k0s_bin_path }}"
+    register: k0s_binary_exists
+    tags:
+        - k0s_setup
+
+-   name: Check if k0s bash completions exists
+    stat:
+        path: "{{ k0s_bash_completions_path }}"
+    register: k0s_bash_completion_file_exists
+    tags:
+        - k0s_setup
+
+-   name: Check if k0s service exists
+    command: "systemctl is-enabled {{ k0s_service_name }}"
+    failed_when: false
+    changed_when: false
+    register: k0s_is_service_enabled
+    tags:
+        - k0s_setup
+
+-   name: Download k0s installer
+    get_url:
+        url: https://get.k0s.sh
+        dest: /tmp/k0s-installer.sh
+        mode: 0775
+    when: >
+        not k0s_binary_exists.stat.exists
+    tags:
+        - k0s_setup
+
+-   name: Execute the k0s-installer.sh
+    shell: "/tmp/k0s-installer.sh K0S_VERSION={{ k0s_version }}"
+    when: >
+        not k0s_binary_exists.stat.exists
+    tags:
+        - k0s_setup
+
+-   name: Install k0s as a service
+    command: "{{ k0s_bin_path }} install controller --single"
+    when: >
+        'No such file or directory' in k0s_is_service_enabled.stderr
+    tags:
+        - k0s_setup
+
+-   name: Check k0s bash completion for changes
+    shell: "{{ k0s_bin_path }} completion bash | cmp - {{ k0s_bash_completions_path }}"
+    failed_when: false
+    changed_when: false
+    register: k0s_has_bash_completion_changes
+    tags:
+        - k0s_setup
+
+-   name: Add k0s bash completions
+    shell: "{{ k0s_bin_path }} completion bash > {{ k0s_bash_completions_path }}"
+    when: >
+        not k0s_bash_completion_file_exists.stat.exists
+        or k0s_has_bash_completion_changes.stderr | length > 0
+    tags:
+        - k0s_setup
+
+-   name: Start k0s as a service
+    command: "{{ k0s_bin_path }} start"
+    when: >
+        k0s_is_service_enabled.stdout != 'enabled'
+    tags:
+        - k0s_setup
+
+-   name: Make sure users k0s directory exists
+    file:
+        path: "{{ k0s_kube_config_path | dirname }}"
+        state: directory
+    when: >
+        k0s_kube_config_path is defined
+        and k0s_kube_config_path
+        and k0s_kube_config_template_path is defined
+        and k0s_kube_config_template_path
+    tags:
+        - k0s_setup
+
+-   name: Wait for k0s config file to exist
+    wait_for:
+        path: "{{ k0s_kube_config_template_path }}"
+        state: present
+        timeout: 15
+    when: >
+        k0s_kube_config_path is defined
+        and k0s_kube_config_path
+        and k0s_kube_config_template_path is defined
+        and k0s_kube_config_template_path
+    tags:
+        - k0s_setup
+
+# Used to connect to kubectl (e.g. when using something like helm)
+# See: https://docs.k0sproject.io/v1.28.4+k0s.0/FAQ/?h=kubectl#how-do-i-connect-to-the-cluster
+-   name: Copy k0s config for usage with kubectl
+    copy:
+        src: "{{ k0s_kube_config_template_path }}"
+        dest: "{{ k0s_kube_config_path }}"
+        remote_src: yes
+        force: no
+    when: >
+        k0s_kube_config_path is defined
+        and k0s_kube_config_path
+        and k0s_kube_config_template_path is defined
+        and k0s_kube_config_template_path
+    tags:
+        - k0s_setup

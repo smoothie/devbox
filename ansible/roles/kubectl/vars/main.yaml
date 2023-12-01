@@ -1,0 +1,3 @@
+---
+kubectl_download_url_kubernetes: "https://dl.k8s.io/release/v{{ kubectl_version }}/bin/linux/{{ kubectl_architecture }}/kubectl"
+kubectl_tmp_bin_path: "/tmp/kubectl-{{ kubectl_version }}"
