@@ -73,6 +73,8 @@ docker_config:
 kubernetes_kube_config_path: '/root/k0s/k0s-admin.conf'
 kubernetes_distro: 'k0s'
 
+k0s_cluster_config_path: '/root/k0s/k0s-cluster-config.yaml'
+
 #php_versions:
 #  - "8.3"
 #  - "8.2"

@@ -68,6 +68,8 @@ this devbox.
         - [x] Docker
         - [x] Kubernetes
           - [x] via k0s
+            - [x] optional k0sctl
+            - [x] Storage via CSI (e.g. OpenEBS)
           - [ ] via k3s
           - [ ] via kind
           - [ ] via kubeadm
@@ -85,6 +87,11 @@ this devbox.
 
 ### TODO
 
+- [ ] Consider (ADR) splitting groups into devmachine, devcontroller:
+  - The machine would be the current webserver stuff (virtual machine managed via vagrant).
+  - The controller would be the host. So stuff like PHPStorm, browsers and so could be installed.
+- [ ] k0s: Update kubectl auth when installing k0s
+- [ ] bash completions: Add a role which lets us add bash completions and computes enabled CLI's into that one. 
 - [ ] Support self-signed apache2 vhosts
 - [ ] Fix apache2, php, user permissions
     - Context: Currently we rewrite apache, php user to vagrant:vagrant.  
@@ -104,8 +111,7 @@ Contributions are one thing that make the open source community such an amazing 
 inspire, and create. Any contributions you make are greatly appreciated.
 
 If you have a suggestion that would make this better, please fork the repo and create a pull
-request. You can also simply open an issue with the tag "enhancement". Don't forget to give the
-project a star! Thanks again!
+request. You can also simply open an issue with the tag "enhancement".
 
 1. Fork the Project
 2. Create your Feature Branch (git checkout -b feature/AmazingFeature)

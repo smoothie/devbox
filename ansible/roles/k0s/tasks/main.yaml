@@ -13,6 +13,20 @@
     tags:
         - k0s_setup
 
+-   name: Check if k0sctl binary exists
+    stat:
+        path: "{{ k0s_k0sctl_bin_path }}"
+    register: k0s_k0sctl_binary_exists
+    tags:
+        - k0s_setup
+
+-   name: Check if k0sctl bash completions exists
+    stat:
+        path: "{{ k0s_k0sctl_bash_completions_path }}"
+    register: k0s_k0sctl_bash_completion_file_exists
+    tags:
+        - k0s_setup
+
 -   name: Check if k0s service exists
     command: "systemctl is-enabled {{ k0s_service_name }}"
     failed_when: false
@@ -24,22 +38,63 @@
 -   name: Download k0s installer
     get_url:
         url: https://get.k0s.sh
-        dest: /tmp/k0s-installer.sh
+        dest: "{{ k0s_installer_tmp_bin_path }}"
         mode: 0775
     when: >
         not k0s_binary_exists.stat.exists
     tags:
         - k0s_setup
 
+-   name: Download k0sctl binary
+    get_url:
+        url: "{{ k0s_k0sctl_download_url }}"
+        dest: "{{ k0s_k0sctl_tmp_bin_path }}"
+        mode: 0775
+    when: >
+        not k0s_k0sctl_binary_exists.stat.exists
+        and k0s_k0sctl_enabled
+    tags:
+        - k0s_setup
+
+-   name: Copy temporary k0sctl to binary path
+    copy:
+        remote_src: true
+        src: "{{ k0s_k0sctl_tmp_bin_path }}"
+        dest: "{{ k0s_k0sctl_bin_path }}"
+        mode: a+x
+    when: >
+        not k0s_k0sctl_binary_exists.stat.exists
+        and k0s_k0sctl_enabled
+    tags:
+        - k0s_setup
+
 -   name: Execute the k0s-installer.sh
-    shell: "/tmp/k0s-installer.sh K0S_VERSION={{ k0s_version }}"
+    shell: "{{ k0s_installer_tmp_bin_path }}{{ k0s_installer_version }}"
     when: >
         not k0s_binary_exists.stat.exists
     tags:
         - k0s_setup
 
+-   name: Make sure cluster config directory exists
+    file:
+        path: "{{ k0s_cluster_config_path | dirname }}"
+        state: directory
+    when: >
+        k0s_cluster_config_path is defined and k0s_cluster_config_path
+    tags:
+        - k0s_setup
+
+-   name: Paste the cluster config
+    template:
+        src: cluster-config.yaml
+        dest: "{{ k0s_cluster_config_path }}"
+    when: >
+        k0s_cluster_config_path is defined and k0s_cluster_config_path
+    tags:
+        - k0s_setup
+
 -   name: Install k0s as a service
-    command: "{{ k0s_bin_path }} install controller --single"
+    command: "{{ k0s_bin_path }} install controller {{ k0s_service_install_args }}{{ k0s_cluster_config_args }}"
     when: >
         'No such file or directory' in k0s_is_service_enabled.stderr
     tags:
@@ -58,6 +113,25 @@
     when: >
         not k0s_bash_completion_file_exists.stat.exists
         or k0s_has_bash_completion_changes.stderr | length > 0
+    tags:
+        - k0s_setup
+
+-   name: Check k0sctl bash completion for changes
+    shell: "{{ k0s_k0sctl_bin_path }} completion bash | cmp - {{ k0s_k0sctl_bash_completions_path }}"
+    failed_when: false
+    changed_when: false
+    register: k0s_k0sctl_has_bash_completion_changes
+    when: >
+        k0s_k0sctl_enabled
+    tags:
+        - k0s_setup
+
+-   name: Add k0sctl bash completions
+    shell: "{{ k0s_k0sctl_bin_path }} completion bash > {{ k0s_k0sctl_bash_completions_path }}"
+    when: >
+        k0s_k0sctl_enabled and
+        (not k0s_k0sctl_bash_completion_file_exists.stat.exists
+        or k0s_k0sctl_has_bash_completion_changes.stderr | length > 0)
     tags:
         - k0s_setup
 
