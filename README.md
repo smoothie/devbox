@@ -86,6 +86,8 @@ this devbox.
         - [ ] Meilisearch
         - [ ] Minio
         - [ ] Prometheus
+        - [x] Image Optimizers
+        - [x] PDF Generation
 
 ### TODO
 

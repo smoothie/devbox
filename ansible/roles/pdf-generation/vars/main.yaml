@@ -1,0 +1,11 @@
+---
+pdf_generation_packages:
+    - "libreoffice"
+    - "libreoffice-script-provider-python"
+    - "libreoffice-math"
+    - "xfonts-75dpi"
+    - "poppler-utils"
+    - "inkscape"
+    - "libxrender1"
+    - "libfontconfig1"
+    - "ghostscript"

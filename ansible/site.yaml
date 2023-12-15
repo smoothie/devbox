@@ -29,6 +29,12 @@
             tags:
                 - image_optimizers
 
+        -   role: pdf-generation
+            become: true
+            when: webservers_stack.pdf_generation | default(false)
+            tags:
+                - pdf_generation
+
         -   role: php
             become: true
             vars:

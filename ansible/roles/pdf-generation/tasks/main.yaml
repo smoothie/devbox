@@ -1,0 +1,7 @@
+---
+-   name: Install PDF generation packages
+    apt:
+        name: "{{ pdf_generation_packages | join(',') }}"
+        state: present
+    tags:
+        - pdf_generation_setup
