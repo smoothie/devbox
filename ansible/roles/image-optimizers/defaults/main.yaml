@@ -1,0 +1,3 @@
+---
+image_optimizers_jpeg_optim_repo_url: https://github.com/imagemin/jpegoptim-bin/raw/main/vendor/linux/jpegoptim
+image_optimizers_jpeg_optim_bin_path: /usr/local/bin/jpegoptim

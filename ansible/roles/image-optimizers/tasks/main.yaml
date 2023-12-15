@@ -1,0 +1,35 @@
+---
+-   name: Check if JPEGOptim binary exists
+    stat:
+        path: "{{ image_optimizers_jpeg_optim_bin_path }}"
+    register: check_image_optimizers_jpeg_optim
+    tags:
+        - image_optimizers_setup
+
+-   name: Install image optimizers
+    apt:
+        name: "{{ image_optimizers_packages | join(',') }}"
+        state: present
+    tags:
+        - image_optimizers_setup
+
+-   name: Download JPEGOptim binary
+    get_url:
+        url: "{{ image_optimizers_jpeg_optim_repo_url }}"
+        dest: "{{ image_optimizers_jpeg_optim_tmp_bin_path }}"
+        mode: 0775
+    when: >
+        not check_image_optimizers_jpeg_optim.stat.exists
+    tags:
+        - image_optimizers_setup
+
+-   name: Copy temporary JPEGOptim to binary path
+    copy:
+        remote_src: true
+        src: "{{ image_optimizers_jpeg_optim_tmp_bin_path }}"
+        dest: "{{ image_optimizers_jpeg_optim_bin_path }}"
+        mode: a+x
+    when: >
+        not check_image_optimizers_jpeg_optim.stat.exists
+    tags:
+        - image_optimizers_setup

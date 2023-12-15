@@ -1,0 +1,9 @@
+---
+image_optimizers_packages:
+    - "pngquant"
+    - "optipng"
+    - "libimage-exiftool-perl"
+    - "webp"
+    - "graphviz"
+
+image_optimizers_jpeg_optim_tmp_bin_path: '/tmp/jpegoptim'

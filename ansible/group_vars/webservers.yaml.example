@@ -13,6 +13,7 @@ webservers_stack:
     kubernetes: false
     kubectl: false
     helm: false
+    image_optimizers: false
 
 apache2_sites:
     localhost:

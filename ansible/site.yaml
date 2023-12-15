@@ -23,6 +23,12 @@
                 - git
                 - git_config
 
+        -   role: image-optimizers
+            become: true
+            when: webservers_stack.image_optimizers | default(false)
+            tags:
+                - image_optimizers
+
         -   role: php
             become: true
             vars:
