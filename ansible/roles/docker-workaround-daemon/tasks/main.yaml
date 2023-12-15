@@ -1,0 +1,38 @@
+---
+# The following tasks help us to see docker containers in our IDE's by forwarding
+# a port to the host machine.
+# see: https://gist.github.com/styblope/dc55e0ad2a9848f2cc3307d4819d819f
+
+# It would be ideal if we could just use the docker role for this. But for now
+# we got this workaround.
+# see: https://github.com/geerlingguy/ansible-role-docker/issues/411
+-   name: Docker - make sure systemd dir exists
+    ansible.builtin.file:
+        path: /etc/systemd/system/docker.service.d
+        state: directory
+        mode: '0755'
+        owner: root
+        group: root
+    tags:
+        - docker_workaround
+
+-   name: Docker - override systemd service unit
+    copy:
+        dest: '/etc/systemd/system/docker.service.d/override.conf'
+        content: |
+            [Service]
+            ExecStart=
+            ExecStart=/usr/bin/dockerd
+        mode: '0755'
+        owner: root
+        group: root
+    register: docker_workaround_daemon_systemd_changed
+    tags:
+        - docker_workaround
+
+-   name: Force systemd to re-read config
+    ansible.builtin.systemd:
+        daemon_reload: true
+    when: docker_workaround_daemon_systemd_changed.changed
+    tags:
+        - docker_workaround

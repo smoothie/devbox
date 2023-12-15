@@ -104,6 +104,12 @@
             tags:
                 - memcached
 
+        -   role: docker-workaround-daemon
+            become: true
+            when: webservers_stack.docker | default(false)
+            tags:
+                - docker
+
         -   role: geerlingguy.docker
             become: true
             vars:
@@ -111,6 +117,11 @@
                 docker_install_compose: false
                 docker_install_compose_plugin: docker_config.install_compose | true
                 docker_apt_filename: "{{ docker_config.apt_filename | default(omit) }}"
+                docker_daemon_options:
+                    containerd: "/run/containerd/containerd.sock"
+                    hosts:
+                        - "tcp://0.0.0.0:2375"
+                        - "unix:///var/run/docker.sock"
             when: webservers_stack.docker | default(false)
             tags:
                 - docker
