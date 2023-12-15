@@ -72,6 +72,11 @@ docker_config:
 
 kubernetes_kube_config_path: '/root/k0s/k0s-admin.conf'
 kubernetes_distro: 'k0s'
+kubernetes_load_balancers:
+    - 'metallb'
+
+kubernetes_ingresses:
+    - 'nginx'
 
 k0s_cluster_config_path: '/root/k0s/k0s-cluster-config.yaml'
 

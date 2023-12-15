@@ -1,0 +1,6 @@
+---
+helm_ingress_nginx_repository_url: 'https://kubernetes.github.io/ingress-nginx'
+helm_ingress_nginx_name: 'ingress-nginx'
+helm_ingress_nginx_chart_name: 'ingress-nginx/ingress-nginx'
+helm_ingress_nginx_namespace: 'default'
+helm_ingress_nginx_chart_values_path: '/etc/k0s/ingress-nginx-chart-values.yaml'

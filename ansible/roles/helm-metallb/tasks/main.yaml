@@ -1,0 +1,45 @@
+---
+-   name: Check status of MetalLB chart
+    command: "{{ helm_metallb_helm_bin_path }} status {{ helm_metallb_name }} --namespace {{ helm_metallb_namespace }}"
+    register: check_helm_metallb_status
+    failed_when: false
+    changed_when: false
+    tags:
+        - helm_metallb
+
+-   name: Paste MetalLB L2 configuration
+    template:
+        src: metallb-l2-config.yaml.j2
+        dest: "{{ helm_metallb_l2_config_path }}"
+        force: true
+    when: >
+        (check_helm_metallb_status.rc != 0)
+        and (helm_metallb_l2_config_path is defined and helm_metallb_l2_config_path)
+    tags:
+        - helm_metallb
+
+-   name: Add MetalLB repository
+    command: "{{ helm_metallb_helm_bin_path }} repo add {{ helm_metallb_name }} {{ helm_metallb_repository_url }}"
+    when: >
+        (check_helm_metallb_status.rc != 0)
+    tags:
+        - helm_metallb
+
+-   name: Update or install MetalLB chart
+    command: "{{ helm_metallb_helm_bin_path }} upgrade {{ helm_metallb_name }} {{ helm_metallb_chart_name }} --namespace {{ helm_metallb_namespace }} --create-namespace --install --reuse-values"
+    when: >
+        (check_helm_metallb_status.rc != 0)
+    tags:
+        - helm_metallb
+
+-   name: Deploy MetalLB L2 configuration
+    command: "{{ helm_metallb_kubectl_bin_path }} apply -f {{ helm_metallb_l2_config_path }}"
+    register: helm_metallb_result_of_waiting_for_pods
+    retries: 5
+    delay: 15
+    until: helm_metallb_result_of_waiting_for_pods.rc == 0
+    when: >
+        (check_helm_metallb_status.rc != 0)
+        and (helm_metallb_l2_config_path is defined and helm_metallb_l2_config_path)
+    tags:
+        - helm_metallb

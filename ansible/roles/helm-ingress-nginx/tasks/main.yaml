@@ -1,0 +1,32 @@
+---
+-   name: Check status of NGINX ingress
+    command: "{{ helm_ingress_nginx_helm_bin_path }} status {{ helm_ingress_nginx_name }} --namespace {{ helm_ingress_nginx_namespace }}"
+    register: check_helm_ingress_nginx_status
+    failed_when: false
+    changed_when: false
+    tags:
+        - helm_ingress_nginx
+
+-   name: Paste NGINX Ingress chart values
+    template:
+        src: ingress-nginx-chart-values.yaml.j2
+        dest: "{{ helm_ingress_nginx_chart_values_path }}"
+        force: true
+    when: >
+        check_helm_ingress_nginx_status.rc != 0
+    tags:
+        - helm_ingress_nginx
+
+-   name: Add NGINX Ingress repository
+    command: "{{ helm_ingress_nginx_helm_bin_path }} repo add {{ helm_ingress_nginx_name }} {{ helm_ingress_nginx_repository_url }}"
+    when: >
+        check_helm_ingress_nginx_status.rc != 0
+    tags:
+        - helm_ingress_nginx
+
+-   name: Install NGINX Ingress chart
+    command: "{{ helm_ingress_nginx_helm_bin_path }} upgrade {{ helm_ingress_nginx_name }} {{ helm_ingress_nginx_chart_name }} --namespace {{ helm_ingress_nginx_namespace }} --create-namespace --install --reuse-values --values {{ helm_ingress_nginx_chart_values_path }}"
+    when: >
+        check_helm_ingress_nginx_status.rc != 0
+    tags:
+        - helm_ingress_nginx

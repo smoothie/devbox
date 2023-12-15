@@ -1,0 +1,12 @@
+---
+apiVersion: k0s.k0sproject.io/v1beta1
+kind: ClusterConfig
+metadata:
+    creationTimestamp: null
+    name: k0s
+spec:
+    extensions:
+{% if k0s_cluster_config_extensions_storage_type is defined %}
+        storage:
+            type: "{{ k0s_cluster_config_extensions_storage_type | default('external_storage') }}"
+{% endif %}

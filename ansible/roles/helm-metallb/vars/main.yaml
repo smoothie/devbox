@@ -1,0 +1,7 @@
+---
+helm_metallb_repository_url: 'https://metallb.github.io/metallb'
+helm_metallb_name: 'metallb'
+helm_metallb_chart_name: 'metallb/metallb'
+helm_metallb_namespace: 'metallb'
+helm_metallb_first_pool_addresses:
+    - 192.168.9.1-192.168.9.1

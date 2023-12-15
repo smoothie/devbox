@@ -86,7 +86,7 @@
 
 -   name: Paste the cluster config
     template:
-        src: cluster-config.yaml
+        src: cluster-config.yaml.j2
         dest: "{{ k0s_cluster_config_path }}"
     when: >
         k0s_cluster_config_path is defined and k0s_cluster_config_path
@@ -154,16 +154,37 @@
     tags:
         - k0s_setup
 
--   name: Wait for k0s config file to exist
-    wait_for:
-        path: "{{ k0s_kube_config_template_path }}"
-        state: present
-        timeout: 15
-    when: >
-        k0s_kube_config_path is defined
-        and k0s_kube_config_path
-        and k0s_kube_config_template_path is defined
-        and k0s_kube_config_template_path
+-   name: Make sure k0s service is in a running state
+    service:
+        name: k0scontroller
+        state: started
+    register: k0s_controller_state
+    until: k0s_controller_state.status.ActiveState == "active"
+    retries: 20
+    delay: 15
+    tags:
+        - k0s_setup
+
+-   name: Wait for pods to get created
+    shell: "{{ k0s_bin_path }} kubectl get pods --all-namespaces --output=jsonpath='{.items[*].metadata.name}'"
+    register: k0s_status_of_all_pods
+    until: item in k0s_status_of_all_pods.stdout
+    retries: 20
+    delay: 15
+    changed_when:
+        - item not in k0s_status_of_all_pods.stdout
+    with_items:
+        - kube-router
+        - kube-proxy
+        - coredns
+    tags:
+        - k0s_setup
+
+-   name: Wait for pods to get ready
+    command: "{{ k0s_bin_path }} kubectl wait pod --all --for=condition=Ready --namespace=kube-system --timeout=600s"
+    register: k0s_result_of_waiting_for_pods
+    changed_when:
+        - k0s_result_of_waiting_for_pods.delta | regex_search('[0-9]+\\.[0-9]+') | float > 1
     tags:
         - k0s_setup
 
@@ -174,7 +195,6 @@
         src: "{{ k0s_kube_config_template_path }}"
         dest: "{{ k0s_kube_config_path }}"
         remote_src: yes
-        force: no
     when: >
         k0s_kube_config_path is defined
         and k0s_kube_config_path

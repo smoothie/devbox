@@ -137,3 +137,33 @@
             tags:
                 - kubernetes
                 - helm
+
+        -   role: helm-metallb
+            become: true
+            vars:
+                helm_metallb_helm_bin_path: "{{ helm_bin_path }}"
+                helm_metallb_kubectl_bin_path: "{{ kubectl_bin_path }}"
+            when: >
+                webservers_stack.helm | default(false)
+                and (kubernetes_load_balancers is defined and 'metallb' in kubernetes_load_balancers)
+            environment:
+                KUBECONFIG: "{{ kubernetes_kube_config_path }}"
+            tags:
+                - kubernetes
+                - helm
+                - helm_metallb
+
+        -   role: helm-ingress-nginx
+            become: true
+            vars:
+                helm_ingress_nginx_helm_bin_path: "{{ helm_bin_path }}"
+                helm_ingress_nginx_kubectl_bin_path: "{{ kubectl_bin_path }}"
+            when: >
+                webservers_stack.helm | default(false)
+                and (kubernetes_ingresses is defined and 'nginx' in kubernetes_ingresses)
+            environment:
+                KUBECONFIG: "{{ kubernetes_kube_config_path }}"
+            tags:
+                - kubernetes
+                - helm
+                - helm_ingress_nginx

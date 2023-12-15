@@ -50,7 +50,7 @@
     tags:
         - kubectl_setup
 
--   name: Export env KUBECONFIG
+-   name: Always export env KUBECONFIG
     template:
         src: kubeconfig.sh.j2
         dest: /etc/profile.d/kubeconfig.sh

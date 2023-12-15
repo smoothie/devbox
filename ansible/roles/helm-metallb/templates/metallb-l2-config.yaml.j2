@@ -1,0 +1,20 @@
+---
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+    name: "first-pool"
+    namespace: "{{ helm_metallb_namespace }}"
+spec:
+    addresses:
+{% for address in helm_metallb_first_pool_addresses %}
+        - {{ address }}
+{% endfor %}
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+    name: "{{ helm_metallb_l2_advertisement_name | default('default') }}"
+    namespace: "{{ helm_metallb_namespace }}"
+spec:
+    ipAddressPools:
+        - "first-pool"

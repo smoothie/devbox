@@ -69,13 +69,15 @@ this devbox.
         - [x] Kubernetes
           - [x] via k0s
             - [x] optional k0sctl
-            - [x] Storage via CSI (e.g. OpenEBS)
+            - [x] Persistent storage via OpenEBS
           - [ ] via k3s
           - [ ] via kind
           - [ ] via kubeadm
           - [ ] via minikube
           - [ ] Podman
           - [x] Helm
+            - [x] MetalLB (Load Balancer) 
+            - [x] NGINX Ingress
     - Others
         - [ ] Apache Solr
         - [ ] Blackfire
@@ -90,7 +92,9 @@ this devbox.
 - [ ] Consider (ADR) splitting groups into devmachine, devcontroller:
   - The machine would be the current webserver stuff (virtual machine managed via vagrant).
   - The controller would be the host. So stuff like PHPStorm, browsers and so could be installed.
-- [ ] k0s: Update kubectl auth when installing k0s
+- [ ] k0s: 
+  - Update kubectl auth when installing k0s.
+  - Consider (ADR) extracting deployments into separate roles, maybe per use case e.g. one for ingress-nginx, another one for metallb, another one for k0sctl.
 - [ ] bash completions: Add a role which lets us add bash completions and computes enabled CLI's into that one. 
 - [ ] Support self-signed apache2 vhosts
 - [ ] Fix apache2, php, user permissions

@@ -3,3 +3,15 @@ k0s_installer_version: "{{ (' K0S_VERSION=' + k0s_version) if k0s_version is def
 k0s_installer_tmp_bin_path: '/tmp/k0s-installer.sh'
 k0s_k0sctl_tmp_bin_path: '/tmp/k0sctl'
 k0s_cluster_config_args: "{{ (' --config ' + k0s_cluster_config_path) if k0s_cluster_config_path is defined and k0s_cluster_config_path else '' }}"
+
+k0s_helm_package_lb_metallb:
+    name: 'metallb'
+    repository_url: 'https://metallb.github.io/metallb'
+    namespace: 'metallb'
+    chart_name: 'metallb/metallb'
+
+k0s_helm_package_ingress_nginx:
+    name: 'ingress-nginx'
+    repository_url: 'https://kubernetes.github.io/ingress-nginx'
+    namespace: 'default'
+    chart_name: 'ingress-nginx/ingress-nginx'
