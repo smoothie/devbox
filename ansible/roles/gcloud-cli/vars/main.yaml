@@ -1,0 +1,6 @@
+---
+gcloud_cli_add_package_source_script_path: '/tmp/add-package-source-for-gcloud-sdk.sh'
+gcloud_cli_dependency_packages:
+    - apt-transport-https
+    - ca-certificates
+    - gnupg

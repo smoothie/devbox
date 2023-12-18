@@ -90,6 +90,7 @@ this devbox.
         - [x] Image Optimizers
         - [x] PDF Generation
         - [x] Conftest
+        - [x] gcloud SDK
 
 ### TODO
 

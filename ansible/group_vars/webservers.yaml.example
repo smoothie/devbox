@@ -17,6 +17,7 @@ webservers_stack:
     image_optimizers: false
     pdf_generation: false
     conftest: false
+    gcloud_cli: false
 
 apache2_sites:
     localhost:

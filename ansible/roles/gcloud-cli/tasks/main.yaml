@@ -1,0 +1,41 @@
+---
+-   name: Check if gcloud package source exists
+    stat:
+        path: "/etc/apt/sources.list.d/google-cloud-sdk.list"
+    register: check_gcloud_cli_package_source_exists
+    tags:
+        - gcloud_cli_setup
+
+-   name: Make sure dependencies are installed
+    apt:
+        name: "{{ gcloud_cli_dependency_packages | join(',') }}"
+        state: present
+    tags:
+        - gcloud_cli_setup
+
+-   name: Copy script to add package sources for gcloud SDK
+    copy:
+        src: "./files/add-package-source-gcloud-sdk.sh"
+        dest: "{{ gcloud_cli_add_package_source_script_path }}"
+        mode: 0755
+        force: false
+    when: >
+        check_gcloud_cli_package_source_exists.stat.exists == false
+    tags:
+        - gcloud_cli_setup
+
+-   name: Add package source for gcloud SDK
+    command: "bash {{ gcloud_cli_add_package_source_script_path }}"
+    when: >
+        check_gcloud_cli_package_source_exists.stat.exists == false
+    tags:
+        - gcloud_cli_setup
+
+-   name: Install gcloud packages
+    apt:
+        update_cache: yes
+        cache_valid_time: 3600
+        name: "{{ gcloud_cli_packages | join(',') }}"
+        state: present
+    tags:
+        - gcloud_cli_setup
