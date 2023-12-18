@@ -21,3 +21,4 @@ common_packages:
     - "default-libmysqlclient-dev"
     - "net-tools"
     - "ffmpeg"
+    - "yamllint"
