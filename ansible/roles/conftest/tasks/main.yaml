@@ -1,0 +1,46 @@
+---
+-   name: Check if conftest bash completions exists
+    stat:
+        path: "{{ conftest_bash_completions_path }}"
+    register: conftest_bash_completion_file_exists
+    tags:
+        - conftest_setup
+
+-   name: Check if conftest binary exists
+    stat:
+        path: "{{ conftest_bin_path }}"
+    register: conftest_binary_exists
+    tags:
+        - conftest_setup
+
+-   name: Paste conftest download script
+    template:
+        src: download-conftest.sh.j2
+        dest: /tmp/download-conftest.sh
+        mode: 0644
+        force: false
+    tags:
+        - conftest_setup
+
+-   name: Run conftest download script
+    script: /tmp/download-conftest.sh
+    when: >
+        conftest_binary_exists.stat.exists == false
+    tags:
+        - conftest_setup
+
+-   name: Check conftest bash completion for changes
+    shell: "{{ conftest_bin_path }} completion bash | cmp - {{ conftest_bash_completions_path }}"
+    failed_when: false
+    changed_when: false
+    register: conftest_has_bash_completion_changes
+    tags:
+        - conftest_setup
+
+-   name: Add conftest bash completions
+    shell: "{{ conftest_bin_path }} completion bash > {{ conftest_bash_completions_path }}"
+    when: >
+        not conftest_bash_completion_file_exists.stat.exists
+        or conftest_has_bash_completion_changes.stderr | length > 0
+    tags:
+        - conftest_setup

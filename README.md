@@ -88,6 +88,7 @@ this devbox.
         - [ ] Prometheus
         - [x] Image Optimizers
         - [x] PDF Generation
+        - [x] Conftest
 
 ### TODO
 

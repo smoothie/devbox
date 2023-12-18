@@ -1,0 +1,24 @@
+#!/usr/bin/bash
+
+{% if conftest_version | default(false) %}
+LATEST_VERSION={{ conftest_version }}
+{% else %}
+LATEST_VERSION=$(wget -O - "https://api.github.com/repos/open-policy-agent/conftest/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | cut -c 2-)
+{% endif %}
+
+{% if conftest_arch | default(false) %}
+ARCH={{ conftest_arch }}
+{% else %}
+ARCH=$(arch)
+{% endif %}
+
+{% if conftest_system | default(false) %}
+SYSTEM={{ conftest_system }}
+{% else %}
+SYSTEM=$(uname)
+{% endif %}
+
+wget "https://github.com/open-policy-agent/conftest/releases/download/v${LATEST_VERSION}/conftest_${LATEST_VERSION}_${SYSTEM}_${ARCH}.tar.gz" --directory-prefix "{{ conftest_tmp_bin_directory }}" -nc
+tar xzf {{ conftest_tmp_bin_directory }}/conftest_${LATEST_VERSION}_${SYSTEM}_${ARCH}.tar.gz -C {{ conftest_tmp_bin_directory }}
+mv {{ conftest_tmp_bin_directory }}/conftest {{ conftest_bin_path }}
+rm {{ conftest_tmp_bin_directory }}/*

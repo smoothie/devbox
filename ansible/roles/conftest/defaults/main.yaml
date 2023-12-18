@@ -1,0 +1,6 @@
+---
+conftest_bin_path: '/usr/local/bin/conftest'
+conftest_bash_completions_path: '/usr/share/bash-completion/completions/conftest'
+conftest_version: '' # when empty the latest version is used
+conftest_system: '' # when empty the current system is used (e.g. Linux)
+conftest_arch: '' # when empty the current systems arch is used (e.g. amd64)

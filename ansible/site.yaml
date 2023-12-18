@@ -35,6 +35,11 @@
             tags:
                 - pdf_generation
 
+        -   role: conftest
+            become: true
+            tags:
+                - conftest_setup
+
         -   role: php
             become: true
             vars:
