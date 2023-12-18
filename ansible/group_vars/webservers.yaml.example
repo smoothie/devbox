@@ -9,12 +9,14 @@ webservers_stack:
     redis: false
     memcached: false
     git: false
+    git_pre_commit: false
     docker: false
     kubernetes: false
     kubectl: false
     helm: false
     image_optimizers: false
     pdf_generation: false
+    conftest: false
 
 apache2_sites:
     localhost:

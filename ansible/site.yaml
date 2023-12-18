@@ -23,6 +23,12 @@
                 - git
                 - git_config
 
+        -   role: git-pre-commit
+            when: (webservers_stack.git | default(true)) and webservers_stack.git_pre_commit | default(false)
+            tags:
+                - git
+                - git_pre_commit_setup
+
         -   role: image-optimizers
             become: true
             when: webservers_stack.image_optimizers | default(false)
@@ -37,6 +43,7 @@
 
         -   role: conftest
             become: true
+            when: webservers_stack.conftest | default(false)
             tags:
                 - conftest_setup
 

@@ -1,0 +1,7 @@
+---
+-   name: Install pre-commit via pip
+    ansible.builtin.pip:
+        name: pre-commit
+        umask: "0022"
+    tags:
+        - git_pre_commit_setup

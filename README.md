@@ -82,6 +82,7 @@ this devbox.
         - [ ] Apache Solr
         - [ ] Blackfire
         - [x] Git
+          - [x] pre-commit
         - [ ] Grafana
         - [ ] Meilisearch
         - [ ] Minio
