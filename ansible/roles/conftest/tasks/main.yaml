@@ -23,7 +23,7 @@
         - conftest_setup
 
 -   name: Run conftest download script
-    script: /tmp/download-conftest.sh
+    command: "bash /tmp/download-conftest.sh"
     when: >
         conftest_binary_exists.stat.exists == false
     tags:
