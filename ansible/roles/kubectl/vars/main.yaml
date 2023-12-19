@@ -1,3 +1,10 @@
 ---
 kubectl_download_url_kubernetes: "https://dl.k8s.io/release/v{{ kubectl_version }}/bin/linux/{{ kubectl_architecture }}/kubectl"
 kubectl_tmp_bin_path: "/tmp/kubectl-{{ kubectl_version }}"
+kubectl_kubectx_add_package_source_script_path: '/tmp/add-package-source-for-kubectx.sh'
+kubectl_kubectx_download_path: '/opt/kubectx'
+kubectl_kubectx_bin_path: '/usr/local/bin/kubectx'
+kubectl_kubens_bin_path: '/usr/local/bin/kubens'
+kubectl_kubectx_repo: https://github.com/ahmetb/kubectx
+kubectl_kubectx_bash_completions_path: '/usr/share/bash-completion/completions/kubectx'
+kubectl_kubens_bash_completions_path: '/usr/share/bash-completion/completions/kubens'

@@ -55,7 +55,7 @@
         src: kubeconfig.sh.j2
         dest: /etc/profile.d/kubeconfig.sh
         mode: 0644
-    when: kubectl_kube_config_path is defined and kubectl_kube_config_path
+    when: kubectl_kube_config_path | default(false)
     tags:
         - kubectl_setup
 
@@ -64,6 +64,51 @@
         path: /root/.bashrc
         block: "{{ lookup('template', 'kubeconfig.sh.j2') }}"
         marker: "# {mark} Ansible(smoothie.kubectl): Keep KUBECONFIG when suing"
-    when: kubectl_kube_config_path is defined and kubectl_kube_config_path
+    when: kubectl_kube_config_path | default(false)
+    tags:
+        - kubectl_setup
+
+-   name: Download kubectx
+    git:
+        repo: "{{ kubectl_kubectx_repo }}"
+        dest: "{{ kubectl_kubectx_download_path }}"
+        single_branch: true
+    when: kubectl_is_kubectx_enabled
+    tags:
+        - kubectl_setup
+
+-   name: Add kubectx binary
+    file:
+        src: "{{ kubectl_kubectx_download_path }}/kubectx"
+        dest: "{{ kubectl_kubectx_bin_path }}"
+        state: link
+    when: kubectl_is_kubectx_enabled
+    tags:
+        - kubectl_setup
+
+-   name: Add kubectx bash completions
+    file:
+        src: "{{ kubectl_kubectx_download_path }}/completion/kubectx.bash"
+        dest: "{{ kubectl_kubectx_bash_completions_path }}"
+        state: link
+    when: kubectl_is_kubectx_enabled
+    tags:
+        - kubectl_setup
+
+-   name: Add kubens binary
+    file:
+        src: "{{ kubectl_kubectx_download_path }}/kubens"
+        dest: "{{ kubectl_kubens_bin_path }}"
+        state: link
+    when: kubectl_is_kubectx_enabled
+    tags:
+        - kubectl_setup
+
+-   name: Add kubens bash completions
+    file:
+        src: "{{ kubectl_kubectx_download_path }}/completion/kubens.bash"
+        dest: "{{ kubectl_kubens_bash_completions_path }}"
+        state: link
+    when: kubectl_is_kubectx_enabled
     tags:
         - kubectl_setup

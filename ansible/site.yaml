@@ -160,7 +160,7 @@
         -   role: kubectl
             become: true
             vars:
-                kubectl_kube_config_path: "{{ kubernetes_kube_config_path }}"
+                kubectl_kube_config_path: "{{ kubernetes_kube_config_path | default(false) }}"
             when: webservers_stack.kubectl | default(false)
             tags:
                 - kubernetes

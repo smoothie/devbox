@@ -4,3 +4,4 @@ kubectl_architecture: 'amd64'
 kubectl_bin_path: '/usr/local/bin/kubectl'
 kubectl_bash_completions_path: '/usr/share/bash-completion/completions/kubectl'
 kubectl_kube_config_path: ''
+kubectl_is_kubectx_enabled: false

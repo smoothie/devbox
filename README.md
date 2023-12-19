@@ -75,6 +75,8 @@ this devbox.
           - [ ] via kubeadm
           - [ ] via minikube
           - [ ] Podman
+          - [x] kubectl
+            - [x] kubectx
           - [x] Helm
             - [x] MetalLB (Load Balancer) 
             - [x] NGINX Ingress
