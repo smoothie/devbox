@@ -13,6 +13,7 @@ webservers_stack:
     docker: false
     kubernetes: false
     kubectl: false
+    k9s: false
     helm: false
     image_optimizers: false
     pdf_generation: false

@@ -166,6 +166,13 @@
                 - kubernetes
                 - kubectl
 
+        -   role: k9s
+            become: true
+            when: webservers_stack.k9s | default(false)
+            tags:
+                - kubernetes
+                - k9s
+
         -   role: geerlingguy.helm
             become: true
             when: webservers_stack.helm | default(false)

@@ -1,0 +1,5 @@
+---
+k9s_version: '0.29.1'
+k9s_bin_path: '/usr/local/bin/k9s'
+k9s_arch: 'amd64'
+k9s_bash_completions_path: '/usr/share/bash-completion/completions/k9s'

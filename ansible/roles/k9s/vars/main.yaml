@@ -1,0 +1,4 @@
+---
+k9s_download_url: 'https://github.com/derailed/k9s/releases/download/v{{ k9s_version }}/k9s_Linux_{{ k9s_arch }}.tar.gz'
+k9s_tmp_dir: '/tmp/k9s'
+k9s_tmp_path: '/tmp/k9s/k9s'

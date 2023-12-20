@@ -80,6 +80,7 @@ this devbox.
           - [x] Helm
             - [x] MetalLB (Load Balancer) 
             - [x] NGINX Ingress
+          - [x] k9s
     - Others
         - [ ] Apache Solr
         - [ ] Blackfire
