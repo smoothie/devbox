@@ -1,3 +1,4 @@
 ---
 gcloud_cli_packages:
     - google-cloud-cli
+    - google-cloud-sdk-gke-gcloud-auth-plugin
