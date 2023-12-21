@@ -23,5 +23,6 @@ common_packages:
     - "ffmpeg"
     - "yamllint"
     - "locales-all"
+    - "locales-all"
 
 common_extra_bash_aliases:
