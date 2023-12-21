@@ -23,6 +23,10 @@ Vagrant.configure('2') do |config|
   config.vm.box = 'ubuntu/jammy64'
   config.vm.hostname = configData['hostname']
 
+  if (configData['disks'] && configData['disks']['default'] && configData['disks']['default']['size'])
+    config.vm.disk :disk, size: configData['disks']['default']['size'], primary: true
+  end
+
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
   # accessing "localhost:8080" will access port 80 on the guest machine.
