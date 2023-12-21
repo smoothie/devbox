@@ -1,0 +1,2 @@
+---
+common_bash_aliases_path: '/home/{{ common_user }}/.bash_aliases'
