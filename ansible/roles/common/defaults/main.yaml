@@ -22,3 +22,6 @@ common_packages:
     - "net-tools"
     - "ffmpeg"
     - "yamllint"
+    - "locales-all"
+
+common_extra_bash_aliases:

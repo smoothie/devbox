@@ -10,7 +10,20 @@
 -   name: Add .bash_aliases
     template:
         src: aliases
-        dest: "/home/{{ common_user }}/.bash_aliases"
+        dest: "{{ common_bash_aliases_path }}"
+    tags:
+        - common_setup
+
+-   name: Add custom aliases
+    blockinfile:
+        path: "{{ common_bash_aliases_path }}"
+        block: |-
+            {{ common_extra_bash_aliases }}
+        marker: "# {mark} Ansible(smoothie.common): Add custom aliases"
+    register: custom_alias_changes
+    changed_when: custom_alias_changes.changed
+    when: >
+        common_extra_bash_aliases | default(false)
     tags:
         - common_setup
 
@@ -20,6 +33,7 @@
         state: present
     tags:
         - common_setup
+
 
 -   name: Keep bash_completion when suing
     blockinfile:

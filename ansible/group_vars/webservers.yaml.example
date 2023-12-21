@@ -86,6 +86,13 @@ kubernetes_ingresses:
 
 k0s_cluster_config_path: '/root/k0s/k0s-cluster-config.yaml'
 
+common_extra_bash_aliases: |-
+    alias art=artisan
+
+    function artisan() {
+        php artisan "$@"
+    }
+
 #php_versions:
 #  - "8.3"
 #  - "8.2"
