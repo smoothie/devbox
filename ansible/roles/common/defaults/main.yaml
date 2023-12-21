@@ -22,3 +22,4 @@ common_packages:
     - "net-tools"
     - "ffmpeg"
     - "yamllint"
+    - "locales-all"
