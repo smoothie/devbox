@@ -2,7 +2,6 @@
 -   include_tasks: shared.yaml
     tags:
         - php_setup
-        - debug
 
 -   name: Setup PHP PPA
     apt_repository:
@@ -26,7 +25,6 @@
     loop: "{{ php_versions }}"
     tags:
         - php_setup
-        - debug
 
 -   name: Enable PHP packages
     shell: "phpenmod -v {{ item }} {{ php_packages[item] | select('search', '.*-.*') | join(' ') }}"
@@ -35,7 +33,6 @@
         label: "php{{ item }}"
     tags:
         - php_setup
-        - debug
 
 -   name: Update PHP-CLI configuration
     lineinfile:
@@ -70,7 +67,6 @@
     notify: Restart PHP-FPM service
     tags:
         - php_setup
-        - debug
 
 -   name: Replace PHP-FPM pools
     template:
@@ -87,35 +83,30 @@
     service_facts:
     tags:
         - php_setup
-        - debug
 
 -   name: Set installed PHP-FPM services
     set_fact:
         php_installed_fpm_services: "{{ services | dict2items | selectattr('key', 'match', '^php[0-9.]+-fpm(\\.service)$') | items2dict }}"
     tags:
         - php_setup
-        - debug
 
 -   name: Set active PHP-FPM services
     set_fact:
         php_active_fpm_services: "{{ php_versions | map('regex_replace', '^(.*)$', 'php\\1-fpm.service') | list }}"
     tags:
         - php_setup
-        - debug
 
 -   name: Show inactive PHP-FPM services
     debug:
         msg: "{{ php_installed_fpm_services | dict2items | rejectattr('key', 'in', php_active_fpm_services) | map(attribute='key') | list }}"
     tags:
         - php_setup
-        - debug
 
 -   name: Show inactive PHP-FPM which should be disabled
     debug:
         msg: "{{ php_installed_fpm_services | dict2items | selectattr('value.status', 'eq', 'enabled')| rejectattr('key', 'in', php_active_fpm_services) | map(attribute='key') | list }}"
     tags:
         - php_setup
-        - debug
 
 -   name: Stop inactive PHP-FPM services
     service:
@@ -131,14 +122,12 @@
         var: php_active_fpm_services
     tags:
         - php_setup
-        - debug
 
 -   name: Show active PHP-FPM services which should be enabled
     debug:
         msg: "{{ php_installed_fpm_services | dict2items | selectattr('value.status', 'ne', 'enabled')| selectattr('key', 'in', php_active_fpm_services) | map(attribute='key') | list }}"
     tags:
         - php_setup
-        - debug
 
 -   name: Enable active PHP-FPM services
     service:
@@ -148,4 +137,3 @@
     loop: "{{ php_installed_fpm_services | dict2items | selectattr('value.status', 'ne', 'enabled')| selectattr('key', 'in', php_active_fpm_services) | list }}"
     tags:
         - php_setup
-        - debug
