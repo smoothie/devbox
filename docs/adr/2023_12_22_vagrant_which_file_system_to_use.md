@@ -1,6 +1,6 @@
 # Vagrant: Which File System to Use?
 
-* Status: draft
+* Status: accepted
 * Date: 2023-12-22
 
 ## Context and Problem Statement
@@ -86,13 +86,12 @@ That's another two-way sync.
 
 Chosen option: "[NFS](#nfs)".
 
-In a later [ADR](2023_12_23_vagrant_nfs_how_to_allow_chowning.md) I will dig deeper into how to allow chown inside the guest without changing host permissions.
+In a later [ADR](TBD_2023_12_23_vagrant_nfs_how_to_allow_chowning.md) I will dig deeper into how to allow chown inside the guest without changing host permissions.
 
 ## References
 
-* [ADR which defined the way how to configure files](2023_12_21_vagrant_how_to_specify_default_disk_size.md)
 * [1][1]: Vagrant on how to set up NFS
-* [2][2]: Vagrant on how to set up RSync
+* [2][2]: Vagrant on how to set up rsync
 * [3][3]: Jeff Geerling on Vagrant VMs performance in NFS, rsync and shared folder (2014)
 * [4][4]: Steve Newsted a quick intro into what rsync does
 * [5][5]: Michael Stapelberg with some experiences where rsync was a game changer for him
