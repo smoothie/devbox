@@ -25,3 +25,5 @@ common_packages:
     - "locales-all"
 
 common_extra_bash_aliases:
+
+common_apply_symlinks:

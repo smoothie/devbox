@@ -93,6 +93,9 @@ common_extra_bash_aliases: |-
         php artisan "$@"
     }
 
+common_apply_symlinks:
+    - { source: '/opt/projects', target: '/home/vagrant/projects' }
+
 #php_versions:
 #  - "8.3"
 #  - "8.2"

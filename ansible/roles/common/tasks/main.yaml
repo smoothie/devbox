@@ -45,3 +45,24 @@
         marker: "# {mark} Ansible(smoothie.common): Keep bash_completion when suing"
     tags:
         - common_setup
+
+-   name: Check for existent symlink sources
+    stat:
+        path: "{{ item.source }}"
+    loop: "{{ common_apply_symlinks | default([], true) }}"
+    register: check_common_existent_symlink_resources
+    tags:
+        - common_setup
+
+-   name: Apply symlinks
+    file:
+        src: "{{ item.item.source }}"
+        dest: "{{ item.item.target }}"
+        state: link
+    loop: "{{ check_common_existent_symlink_resources.results | default([], true) }}"
+    loop_control:
+        label: "source: {{ item.item.source | default('none', true) }}, target: {{ item.item.target | default('none', true) }}"
+    when: >
+        item.stat.exists | default(false)
+    tags:
+        - common_setup
