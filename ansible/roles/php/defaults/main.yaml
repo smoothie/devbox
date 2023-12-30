@@ -53,13 +53,13 @@ php_packages:
         - php8.3-gettext
         - php8.3-gmp
         - php8.3-iconv
-        #    - php8.3-imagick
+        - php8.3-imagick
         - php8.3-imap
         - php8.3-interbase
         - php8.3-intl
         - php8.3-ldap
         - php8.3-mbstring
-        #    - php8.3-memcached
+        - php8.3-memcached
         - php8.3-mysql
         - php8.3-mysqli
         - php8.3-mysqlnd
@@ -72,7 +72,7 @@ php_packages:
         - php8.3-posix
         - php8.3-pspell
         - php8.3-readline
-        #    - php8.3-redis
+        - php8.3-redis
         - php8.3-shmop
         - php8.3-simplexml
         - php8.3-snmp
@@ -85,10 +85,10 @@ php_packages:
         - php8.3-sysvshm
         - php8.3-tidy
         - php8.3-tokenizer
-        #    - php8.3-xdebug
+        - php8.3-xdebug
         - php8.3-xml
         - php8.3-xmlreader
-        #    - php8.3-xmlrpc
+        - php8.3-xmlrpc
         - php8.3-xmlwriter
         - php8.3-xsl
         - php8.3-zip
