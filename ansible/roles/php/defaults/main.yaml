@@ -196,6 +196,7 @@ php_packages:
         - php8.1-posix
         - php8.1-pspell
         - php8.1-readline
+        - php8.1-redis
         - php8.1-shmop
         - php8.1-simplexml
         - php8.1-snmp
