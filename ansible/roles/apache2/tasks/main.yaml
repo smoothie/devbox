@@ -46,6 +46,20 @@
     tags:
         - apache2_setup
 
+-   name: Enable proxy
+    community.general.apache2_module:
+        state: present
+        name: proxy
+    tags:
+        - apache2_setup
+
+-   name: Enable proxy_http
+    community.general.apache2_module:
+        state: present
+        name: proxy_http
+    tags:
+        - apache2_setup
+
 -   name: Configure sites (default)
     template:
         src: sites-available/000-default.conf.j2

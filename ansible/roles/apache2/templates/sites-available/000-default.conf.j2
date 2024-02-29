@@ -3,7 +3,14 @@
     ServerName {{ item.key }}
     ServerAlias {{ item.value.apache2_server_aliases | join(' ') }}
     DocumentRoot {{ item.value.apache2_document_root }}
+{% if item.value.apache2_locations is defined %}
 
+    ProxyPreserveHost On
+    ProxyRequests Off
+
+    {% include './partials/locations.conf.j2' %}
+
+{% endif %}
     <Directory {{ item.value.apache2_document_root }}>
         AllowOverride All
         Require all granted

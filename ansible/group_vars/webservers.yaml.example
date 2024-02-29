@@ -27,6 +27,8 @@ apache2_sites:
         apache2_server_aliases:
             - localhost
         php_version: "8.2"
+        apache2_locations:
+            '/fromPath': 'http://toUrl.local.test:1337'
 
     some-example.local.test:
         apache2_document_root: /home/vagrant/ansible-devbox/public
