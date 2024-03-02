@@ -9,7 +9,7 @@
 
 -   name: Add .bash_aliases
     template:
-        src: aliases
+        src: aliases.j2
         dest: "{{ common_bash_aliases_path }}"
     tags:
         - common_setup
