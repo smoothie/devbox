@@ -1,4 +1,7 @@
 {% if item.value.apache2_locations is defined -%}
+    ProxyPreserveHost On
+    ProxyRequests Off
+
     {% for from_path, to_url in item.value.apache2_locations.items() -%}
     <Location {{ from_path }}>
         ProxyPass {{ to_url }}
