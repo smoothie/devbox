@@ -1,0 +1,34 @@
+[Unit]
+Description={{ item.unit.description }}
+{% if item.unit.start_limit_interval_sec is defined %}
+StartLimitIntervalSec={{ item.unit.start_limit_interval_sec }}
+{% endif %}
+{% if item.unit.after is defined %}
+After={{ item.unit.after }}
+{% endif %}
+{% if item.services is defined %}
+{% for service in item.services %}
+
+[Service]
+Type={{ service.type }}
+{% if service.user is defined %}
+User={{ service.user }}
+{% endif %}
+{% if service.exec_start_pre is defined %}
+ExecStartPre={{ service.exec_start_pre }}
+{% endif %}
+{% if service.exec_start is defined %}
+ExecStart={{ service.exec_start }}
+{% endif %}
+{% if service.environment_files is defined %}
+{% for environment_file in service.environment_files %}
+EnvironmentFile={{ environment_file }}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+
+[Install]
+WantedBy={{ item.install.wanted_by }}
+
+# vim: syntax=apache ts=4 sw=4 sts=4 sr noet

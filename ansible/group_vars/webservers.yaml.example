@@ -98,6 +98,22 @@ common_extra_bash_aliases: |-
 common_apply_symlinks:
     - { source: '/opt/projects', target: '/home/vagrant/projects' }
 
+common_systemd_units:
+    -   name: 'some.service'
+        unit:
+            description: 'some unit description'
+            start_limit_interval_sec: 1
+            after: 'after.another.service'
+        install:
+            wanted_by: 'multi-user.target'
+        services:
+            -   type: 'simple'
+                user: 'vagrant'
+                exec_start_pre: '/usr/bin/env php -v'
+                exec_start: '/usr/bin/env php -v'
+                environment_files:
+                    - '/some/path/to/an/env'
+
 #php_versions:
 #  - "8.3"
 #  - "8.2"

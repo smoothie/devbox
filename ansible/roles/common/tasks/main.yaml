@@ -66,3 +66,37 @@
         item.stat.exists | default(false)
     tags:
         - common_setup
+
+-   name: Create service units
+    template:
+        src: unit.service.j2
+        dest: "{{ common_systemd_service_path }}{{ item.name }}"
+    loop: "{{ common_systemd_units | default([], true) }}"
+    loop_control:
+        label: "{{ common_systemd_service_path + item.name | default('none', true) }}"
+    when: >
+        common_systemd_units is defined | default(false)
+    tags:
+        - common_setup
+
+-   name: Reload service daemon
+    systemd:
+        daemon_reload: true
+    when: >
+        common_systemd_units is defined | default(false)
+    tags:
+        - common_setup
+
+-   name: Start and enable service units
+    systemd:
+        enabled: true
+        name: "{{ item.name }}"
+        state: started
+        no_block: true
+    loop: "{{ common_systemd_units | default([], true) }}"
+    loop_control:
+        label: "{{ common_systemd_service_path + item.name | default('none', true) }}"
+    when: >
+        common_systemd_units is defined | default(false)
+    tags:
+        - common_setup
