@@ -10,16 +10,26 @@ listen.mode = 0666
 ;listen.acl_users =
 ;listen.acl_groups =
 ;listen.allowed_clients = 127.0.0.1
-pm = dynamic
-pm.max_children = 5
-pm.start_servers = 2
-pm.min_spare_servers = 1
-pm.max_spare_servers = 3
+{%if php_fpm.pm is defined %}
+pm = {{ php_fpm.pm }}
+{% if php_fpm.pm_max_children is defined %}
+pm.max_children = {{ php_fpm.pm_max_children }}
+{% endif %}
+{% if php_fpm.pm_start_servers is defined %}
+pm.start_servers = {{ php_fpm.pm_start_servers }}
+{% endif %}
+{% if php_fpm.pm_min_spare_servers is defined %}
+pm.min_spare_servers = {{ php_fpm.pm_min_spare_servers }}
+{% endif %}
+{% if php_fpm.pm_max_spare_servers is defined %}
+pm.max_spare_servers = {{ php_fpm.pm_max_spare_servers }}
+{% endif %}
 ;pm.max_spawn_rate = 32
 ;pm.process_idle_timeout = 10s;
 ;pm.max_requests = 500
 ;pm.status_path = /status
 ;pm.status_listen = 127.0.0.1:9001
+{% endif %}
 ;ping.path = /ping
 ;ping.response = pong
 ;access.log = log/$pool.access.log
