@@ -94,6 +94,7 @@ this devbox.
         - [x] PDF Generation
         - [x] Conftest
         - [x] gcloud SDK
+        - [x] Mailpit
 
 ### TODO
 

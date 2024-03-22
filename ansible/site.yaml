@@ -215,3 +215,9 @@
             when: webservers_stack.gcloud_cli | default(false)
             tags:
                 - gcloud_cli
+
+        -   role: roots.mailpit
+            become: true
+            when: webservers_stack.mailpit | default(false)
+            tags:
+                - mailpit

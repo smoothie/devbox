@@ -19,6 +19,7 @@ webservers_stack:
     pdf_generation: false
     conftest: false
     gcloud_cli: false
+    mailpit: false
 
 apache2_sites:
     localhost:
@@ -113,6 +114,9 @@ common_systemd_units:
                 exec_start: '/usr/bin/env php -v'
                 environment_files:
                     - '/some/path/to/an/env'
+
+mailpit_version: latest
+mailpit_release_url: https://github.com/axllent/mailpit/releases/latest/download/mailpit-linux-amd64.tar.gz
 
 #php_versions:
 #  - "8.3"

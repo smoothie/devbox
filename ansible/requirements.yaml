@@ -1,27 +1,30 @@
 ---
-- name: gantsign.golang
-  version: 3.2.0
+-   name: gantsign.golang
+    version: 3.2.0
 
-- name: geerlingguy.java
-  version: 2.3.1
+-   name: geerlingguy.java
+    version: 2.3.1
 
-- name: geerlingguy.redis
-  version: 1.8.0
+-   name: geerlingguy.redis
+    version: 1.8.0
 
-- name: geerlingguy.memcached
-  version: 2.2.0
+-   name: geerlingguy.memcached
+    version: 2.2.0
 
-- name: geerlingguy.git
-  version: 3.0.1
+-   name: geerlingguy.git
+    version: 3.0.1
 
-- name: geerlingguy.composer
-  version: 1.9.2
+-   name: geerlingguy.composer
+    version: 1.9.2
 
-- name: geerlingguy.docker
-  version: 7.0.2
+-   name: geerlingguy.docker
+    version: 7.0.2
 
-- name: geerlingguy.containerd
-  version: 1.3.1
+-   name: geerlingguy.containerd
+    version: 1.3.1
 
-- name: geerlingguy.helm
-  version: 1.0.1
+-   name: geerlingguy.helm
+    version: 1.0.1
+
+-   name: roots.mailpit
+    version: 1.0.0
