@@ -43,6 +43,7 @@ php_supported_versions:
 php_packages:
     "8.3":
         - php8.3
+        - php8.3-amqp
         - php8.3-bcmath
         - php8.3-bz2
         - php8.3-calendar
@@ -106,6 +107,7 @@ php_packages:
 
     "8.2":
         - php8.2
+        - php8.2-amqp
         - php8.2-bcmath
         - php8.2-bz2
         - php8.2-calendar
@@ -169,6 +171,7 @@ php_packages:
 
     "8.1":
         - php8.1
+        - php8.1-amqp
         - php8.1-bcmath
         - php8.1-bz2
         - php8.1-calendar
@@ -230,6 +233,7 @@ php_packages:
 
     "8.0":
         - php8.0
+        - php8.0-amqp
         - php8.0-bcmath
         - php8.0-bz2
         - php8.0-calendar
@@ -292,6 +296,7 @@ php_packages:
 
     "7.4":
         - php7.4
+        - php7.4-amqp
         - php7.4-bcmath
         - php7.4-bz2
         - php7.4-calendar
