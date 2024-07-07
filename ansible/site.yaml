@@ -1,224 +1,224 @@
 #!/usr/bin/env ansible-playbook
 ---
--   hosts: webservers
-    connection: local
-    become: false
-    roles:
-        -   role: common
-            become: true
-            tags:
-                - common
+- hosts: webservers
+  connection: local
+  become: false
+  roles:
+    - role: common
+      become: true
+      tags:
+        - common
 
-        -   role: geerlingguy.git
-            become: true
-            vars:
-                workspace: "{{ git_workspace | default(/root) }}"
-            when: webservers_stack.git | default(true)
-            tags:
-                - git
+    - role: geerlingguy.git
+      become: true
+      vars:
+        workspace: "{{ git_workspace | default(/root) }}"
+      when: webservers_stack.git | default(true)
+      tags:
+        - git
 
-        -   role: git-config
-            when: webservers_stack.git | default(true)
-            tags:
-                - git
-                - git_config
+    - role: git-config
+      when: webservers_stack.git | default(true)
+      tags:
+        - git
+        - git_config
 
-        -   role: git-pre-commit
-            when: (webservers_stack.git | default(true)) and webservers_stack.git_pre_commit | default(false)
-            tags:
-                - git
-                - git_pre_commit_setup
+    - role: git-pre-commit
+      when: (webservers_stack.git | default(true)) and webservers_stack.git_pre_commit | default(false)
+      tags:
+        - git
+        - git_pre_commit_setup
 
-        -   role: image-optimizers
-            become: true
-            when: webservers_stack.image_optimizers | default(false)
-            tags:
-                - image_optimizers
+    - role: image-optimizers
+      become: true
+      when: webservers_stack.image_optimizers | default(false)
+      tags:
+        - image_optimizers
 
-        -   role: pdf-generation
-            become: true
-            when: webservers_stack.pdf_generation | default(false)
-            tags:
-                - pdf_generation
+    - role: pdf-generation
+      become: true
+      when: webservers_stack.pdf_generation | default(false)
+      tags:
+        - pdf_generation
 
-        -   role: conftest
-            become: true
-            when: webservers_stack.conftest | default(false)
-            tags:
-                - conftest_setup
+    - role: conftest
+      become: true
+      when: webservers_stack.conftest | default(false)
+      tags:
+        - conftest_setup
 
-        -   role: php
-            become: true
-            vars:
-                php_user: "{{ host_user }}"
-                php_group: "{{ host_group }}"
-            when: webservers_stack.php | default(true)
-            tags:
-                - php
+    - role: php
+      become: true
+      vars:
+        php_user: "{{ host_user }}"
+        php_group: "{{ host_group }}"
+      when: webservers_stack.php | default(true)
+      tags:
+        - php
 
-        -   role: geerlingguy.composer
-            become: true
-            when: webservers_stack.php | default(true)
-            tags:
-                - php
-                - php_composer
+    - role: geerlingguy.composer
+      become: true
+      when: webservers_stack.php | default(true)
+      tags:
+        - php
+        - php_composer
 
-        -   role: mysql
-            become: true
-            when: webservers_stack.mysql | default(false)
-            tags:
-                - mysql
+    - role: mysql
+      become: true
+      when: webservers_stack.mysql | default(false)
+      tags:
+        - mysql
 
-        -   role: mariadb
-            become: true
-            when: webservers_stack.mariadb | default(true)
-            tags:
-                - mariadb
+    - role: mariadb
+      become: true
+      when: webservers_stack.mariadb | default(true)
+      tags:
+        - mariadb
 
-        -   role: apache2
-            become: true
-            vars:
-                apache2_user: "{{ host_user }}"
-                apache2_group: "{{ host_group }}"
-            when: webservers_stack.apache2 | default(true)
-            tags:
-                - apache2
+    - role: apache2
+      become: true
+      vars:
+        apache2_user: "{{ host_user }}"
+        apache2_group: "{{ host_group }}"
+      when: webservers_stack.apache2 | default(true)
+      tags:
+        - apache2
 
-        -   role: nvm
-            become: true
-            vars:
-                nvm_user: "{{ host_user }}"
-                nvm_group: "{{ host_group }}"
-            when: webservers_stack.nvm | default(true)
-            tags:
-                - nvm
+    - role: nvm
+      become: true
+      vars:
+        nvm_user: "{{ host_user }}"
+        nvm_group: "{{ host_group }}"
+      when: webservers_stack.nvm | default(true)
+      tags:
+        - nvm
 
-        -   role: gantsign.golang
-            when: webservers_stack.golang | default(false)
-            tags:
-                - golang
+    - role: gantsign.golang
+      when: webservers_stack.golang | default(false)
+      tags:
+        - golang
 
-        -   role: geerlingguy.java
-            become: true
-            when: webservers_stack.java | default(false)
-            tags:
-                - java
+    - role: geerlingguy.java
+      become: true
+      when: webservers_stack.java | default(false)
+      tags:
+        - java
 
-        -   role: geerlingguy.redis
-            become: true
-            when: webservers_stack.redis | default(false)
-            tags:
-                - redis
+    - role: geerlingguy.redis
+      become: true
+      when: webservers_stack.redis | default(false)
+      tags:
+        - redis
 
-        -   role: geerlingguy.memcached
-            become: true
-            when: webservers_stack.memcached | default(false)
-            tags:
-                - memcached
+    - role: geerlingguy.memcached
+      become: true
+      when: webservers_stack.memcached | default(false)
+      tags:
+        - memcached
 
-        -   role: docker-workaround-daemon
-            become: true
-            when: webservers_stack.docker | default(false)
-            tags:
-                - docker
+    - role: docker-workaround-daemon
+      become: true
+      when: webservers_stack.docker | default(false)
+      tags:
+        - docker
 
-        -   role: geerlingguy.docker
-            become: true
-            vars:
-                docker_users: "{{ [ host_user ] + docker_config.users | default([]) | select() | list }}"
-                docker_install_compose: false
-                docker_install_compose_plugin: docker_config.install_compose | true
-                docker_apt_filename: "{{ docker_config.apt_filename | default(omit) }}"
-                docker_daemon_options:
-                    containerd: "/run/containerd/containerd.sock"
-                    bip: "{{ docker_config.bip | default('192.168.70.1/32') }}"
-                    hosts:
-                        - "tcp://0.0.0.0:2375"
-                        - "unix:///var/run/docker.sock"
-            when: webservers_stack.docker | default(false)
-            tags:
-                - docker
+    - role: geerlingguy.docker
+      become: true
+      vars:
+        docker_users: "{{ [ host_user ] + docker_config.users | default([]) | select() | list }}"
+        docker_install_compose: false
+        docker_install_compose_plugin: docker_config.install_compose | true
+        docker_apt_filename: "{{ docker_config.apt_filename | default(omit) }}"
+        docker_daemon_options:
+          containerd: "/run/containerd/containerd.sock"
+          bip: "{{ docker_config.bip | default('192.168.70.1/32') }}"
+          hosts:
+            - "tcp://0.0.0.0:2375"
+            - "unix:///var/run/docker.sock"
+      when: webservers_stack.docker | default(false)
+      tags:
+        - docker
 
-        -   role: geerlingguy.containerd
-            become: true
-            vars:
-                containerd_config_cgroup_driver_systemd: true
-                docker_apt_filename: "{{ docker_config.apt_filename | default(omit) }}"
-            when: webservers_stack.kubernetes | default(false)
-            tags:
-                - kubernetes
-                - containerd
+    - role: geerlingguy.containerd
+      become: true
+      vars:
+        containerd_config_cgroup_driver_systemd: true
+        docker_apt_filename: "{{ docker_config.apt_filename | default(omit) }}"
+      when: webservers_stack.kubernetes | default(false)
+      tags:
+        - kubernetes
+        - containerd
 
-        -   role: k0s
-            become: true
-            vars:
-                k0s_kube_config_path: "{{ kubernetes_kube_config_path }}"
-            when: webservers_stack.kubernetes | default(false) and kubernetes_distro == 'k0s' | default(false)
-            tags:
-                - kubernetes
-                - k0s
+    - role: k0s
+      become: true
+      vars:
+        k0s_kube_config_path: "{{ kubernetes_kube_config_path }}"
+      when: webservers_stack.kubernetes | default(false) and kubernetes_distro == 'k0s' | default(false)
+      tags:
+        - kubernetes
+        - k0s
 
-        -   role: kubectl
-            become: true
-            vars:
-                kubectl_kube_config_path: "{{ kubernetes_kube_config_path | default(false) }}"
-            when: webservers_stack.kubectl | default(false)
-            tags:
-                - kubernetes
-                - kubectl
+    - role: kubectl
+      become: true
+      vars:
+        kubectl_kube_config_path: "{{ kubernetes_kube_config_path | default(false) }}"
+      when: webservers_stack.kubectl | default(false)
+      tags:
+        - kubernetes
+        - kubectl
 
-        -   role: k9s
-            become: true
-            when: webservers_stack.k9s | default(false)
-            tags:
-                - kubernetes
-                - k9s
+    - role: k9s
+      become: true
+      when: webservers_stack.k9s | default(false)
+      tags:
+        - kubernetes
+        - k9s
 
-        -   role: geerlingguy.helm
-            become: true
-            when: webservers_stack.helm | default(false)
-            tags:
-                - kubernetes
-                - helm
+    - role: geerlingguy.helm
+      become: true
+      when: webservers_stack.helm | default(false)
+      tags:
+        - kubernetes
+        - helm
 
-        -   role: helm-metallb
-            become: true
-            vars:
-                helm_metallb_helm_bin_path: "{{ helm_bin_path }}"
-                helm_metallb_kubectl_bin_path: "{{ kubectl_bin_path }}"
-            when: >
-                webservers_stack.helm | default(false)
-                and (kubernetes_load_balancers is defined and 'metallb' in kubernetes_load_balancers)
-            environment:
-                KUBECONFIG: "{{ kubernetes_kube_config_path }}"
-            tags:
-                - kubernetes
-                - helm
-                - helm_metallb
+    - role: helm-metallb
+      become: true
+      vars:
+        helm_metallb_helm_bin_path: "{{ helm_bin_path }}"
+        helm_metallb_kubectl_bin_path: "{{ kubectl_bin_path }}"
+      when: >
+        webservers_stack.helm | default(false)
+        and (kubernetes_load_balancers is defined and 'metallb' in kubernetes_load_balancers)
+      environment:
+        KUBECONFIG: "{{ kubernetes_kube_config_path }}"
+      tags:
+        - kubernetes
+        - helm
+        - helm_metallb
 
-        -   role: helm-ingress-nginx
-            become: true
-            vars:
-                helm_ingress_nginx_helm_bin_path: "{{ helm_bin_path }}"
-                helm_ingress_nginx_kubectl_bin_path: "{{ kubectl_bin_path }}"
-            when: >
-                webservers_stack.helm | default(false)
-                and (kubernetes_ingresses is defined and 'nginx' in kubernetes_ingresses)
-            environment:
-                KUBECONFIG: "{{ kubernetes_kube_config_path }}"
-            tags:
-                - kubernetes
-                - helm
-                - helm_ingress_nginx
+    - role: helm-ingress-nginx
+      become: true
+      vars:
+        helm_ingress_nginx_helm_bin_path: "{{ helm_bin_path }}"
+        helm_ingress_nginx_kubectl_bin_path: "{{ kubectl_bin_path }}"
+      when: >
+        webservers_stack.helm | default(false)
+        and (kubernetes_ingresses is defined and 'nginx' in kubernetes_ingresses)
+      environment:
+        KUBECONFIG: "{{ kubernetes_kube_config_path }}"
+      tags:
+        - kubernetes
+        - helm
+        - helm_ingress_nginx
 
-        -   role: gcloud-cli
-            become: true
-            when: webservers_stack.gcloud_cli | default(false)
-            tags:
-                - gcloud_cli
+    - role: gcloud-cli
+      become: true
+      when: webservers_stack.gcloud_cli | default(false)
+      tags:
+        - gcloud_cli
 
-        -   role: roots.mailpit
-            become: true
-            when: webservers_stack.mailpit | default(false)
-            tags:
-                - mailpit
+    - role: roots.mailpit
+      become: true
+      when: webservers_stack.mailpit | default(false)
+      tags:
+        - mailpit

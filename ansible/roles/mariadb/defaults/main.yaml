@@ -19,21 +19,21 @@ mariadb_root_user: root
 mariadb_root_password: secret
 
 mariadb_users:
-    root:
-        password: secret
-        host: 127.0.0.1
-        path: /root/.my.cnf
-        # no need to rewrite root privileges, as root should only be accessible from the machine
+  root:
+    password: secret
+    host: 127.0.0.1
+    path: /root/.my.cnf
+    # no need to rewrite root privileges, as root should only be accessible from the machine
 
-    devman:
-        password: secret
-        host: 127.0.0.1
-        path: /home/{{ host_user }}/.my.cnf
-        privileges: '*.*:ALL,GRANT/0.0.0.0:ALL,GRANT'
+  devman:
+    password: secret
+    host: 127.0.0.1
+    path: /home/{{ host_user }}/.my.cnf
+    privileges: "*.*:ALL,GRANT/0.0.0.0:ALL,GRANT"
 
 mariadb_paths:
-    mysqld_config: /etc/mysql/mariadb.conf.d/50-server.cnf
+  mysqld_config: /etc/mysql/mariadb.conf.d/50-server.cnf
 
 mariadb_packages:
-    - mariadb-server
-    - mariadb-client
+  - mariadb-server
+  - mariadb-client

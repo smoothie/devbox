@@ -17,21 +17,21 @@ mysql_root_user: root
 mysql_root_password: secret
 
 mysql_users:
-    root:
-        password: secret
-        host: 127.0.0.1
-        path: /root/.my.cnf
-        # no need to rewrite root privileges, as root should only be accessible from the machine
+  root:
+    password: secret
+    host: 127.0.0.1
+    path: /root/.my.cnf
+    # no need to rewrite root privileges, as root should only be accessible from the machine
 
-    devman:
-        password: secret
-        host: 127.0.0.1
-        path: /home/{{ host_user }}/.my.cnf
-        privileges: '*.*:ALL,GRANT/0.0.0.0:ALL,GRANT'
+  devman:
+    password: secret
+    host: 127.0.0.1
+    path: /home/{{ host_user }}/.my.cnf
+    privileges: "*.*:ALL,GRANT/0.0.0.0:ALL,GRANT"
 
 mysql_paths:
-    mysqld_config: /etc/mysql/mysql.conf.d/mysqld.cnf
+  mysqld_config: /etc/mysql/mysql.conf.d/mysqld.cnf
 
 mysql_packages:
-    - mysql-server
-    - mysql-client
+  - mysql-server
+  - mysql-client
