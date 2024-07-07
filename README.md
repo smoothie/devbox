@@ -109,6 +109,17 @@ this devbox.
 - [ ] Fix apache2, php, user permissions
     - Context: Currently we rewrite apache, php user to vagrant:vagrant.  
       This is considered a bad practice, that's why we should do something else (TBD).
+- [ ] Maintenance Tasks
+  - Check stuff  
+    - Check for apt updates
+    - Check for pip updates
+    - Check for composer upgrades
+    - Check for current used npm/node updates
+  - Do stuff
+    - [ ] Upgrade apt packages
+    - [ ] Upgrade pip packages
+    - [ ] Upgrade composer
+    - [ ] Upgrade for current used npm/node
 
 ## Installation
 
