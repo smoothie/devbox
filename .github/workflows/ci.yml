@@ -1,0 +1,27 @@
+---
+name: CI
+on:
+  pull_request:
+  push:
+    branches:
+      development
+      main
+
+jobs:
+  check-ansible:
+    name: Ansible
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the codebase.
+        uses: actions/checkout@v4
+      - name: Set up Python 3.
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install test dependencies.
+        run: pip3 install --include-deps docker yamllint ansible-lint ansible
+      - name: Run checks
+        run: bash ansible/qa.sh
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLORS: '1'
