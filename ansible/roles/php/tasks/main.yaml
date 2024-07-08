@@ -1,104 +1,113 @@
 ---
-- include_tasks: shared.yaml
+- name: Include supporting tasks
+  ansible.builtin.include_tasks: shared.yaml
   tags:
     - php_setup
 
 - name: Setup PHP PPA
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: ppa:ondrej/php
   tags:
     - php_setup
 
 - name: Install PHP versions and packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ php_packages[item] }}"
     state: present
   loop: "{{ php_versions }}"
   loop_control:
-    label: "php{{ item }}"
+    label: php{{ item }}
   tags:
     - php_setup
 
 - name: Show PHP packages which should be enabled
-  debug:
-    msg: "phpenmod -v {{ item }} {{ php_packages[item] | select('search', '.*-.*') | join(' ') }}"
+  ansible.builtin.debug:
+    msg: phpenmod -v {{ item }} {{ php_packages[item] | select('search', '.*-.*') | join(' ') }}
   loop: "{{ php_versions }}"
   tags:
     - php_setup
 
 - name: Enable PHP packages
-  shell: "phpenmod -v {{ item }} {{ php_packages[item] | select('search', '.*-.*') | join(' ') }}"
+  ansible.builtin.command: phpenmod -v {{ item }} {{ php_packages[item] | select('search', '.*-.*') | join(' ') }}
   loop: "{{ php_versions }}"
   loop_control:
-    label: "php{{ item }}"
+    label: php{{ item }}
+  register: php_packages_have_been_enabled
+  changed_when: php_packages_have_been_enabled.rc != 0
   tags:
     - php_setup
 
 - name: Update PHP-CLI configuration
-  lineinfile:
-    path: "/etc/php/{{ item.0.key }}/cli/php.ini"
+  ansible.builtin.lineinfile:
+    path: /etc/php/{{ item.0.key }}/cli/php.ini
     regexp: "{{ item.1.regexp }}"
     line: "{{ item.1.line }}"
   with_subelements:
-    - "{{ php_ini_changes | dict2items | selectattr('key','in', php_versions) | list }}"
-    - "value"
+    - "{{ php_ini_changes | dict2items | selectattr('key', 'in', php_versions) | list }}"
+    - value
   tags:
     - php_setup
 
 - name: Update PHP-FPM configuration
-  lineinfile:
-    path: "/etc/php/{{ item.0.key }}/fpm/php.ini"
+  ansible.builtin.lineinfile:
+    path: /etc/php/{{ item.0.key }}/fpm/php.ini
     regexp: "{{ item.1.regexp }}"
     line: "{{ item.1.line }}"
   with_subelements:
-    - "{{ php_ini_changes | dict2items | selectattr('key','in', php_versions) | list }}"
-    - "value"
+    - "{{ php_ini_changes | dict2items | selectattr('key', 'in', php_versions) | list }}"
+    - value
   notify: Restart PHP-FPM service
   tags:
     - php_setup
 
 - name: Update PHP XDebug config
-  template:
+  ansible.builtin.template:
     src: "{{ item }}/mods-available/xdebug.ini.j2"
-    dest: "/etc/php/{{ item }}/mods-available/xdebug.ini"
+    dest: /etc/php/{{ item }}/mods-available/xdebug.ini
+    owner: root
+    group: root
+    mode: "0644"
   loop: "{{ php_versions }}"
   loop_control:
-    label: "php{{ item }}"
+    label: php{{ item }}
   notify: Restart PHP-FPM service
   tags:
     - php_setup
 
 - name: Replace PHP-FPM pools
-  template:
+  ansible.builtin.template:
     src: "{{ item }}/fpm/pool.d/www.conf.j2"
-    dest: "/etc/php/{{ item }}/fpm/pool.d/www.conf"
+    dest: /etc/php/{{ item }}/fpm/pool.d/www.conf
+    owner: root
+    group: root
+    mode: "0644"
   loop: "{{ php_versions }}"
   loop_control:
-    label: "php{{ item }}"
+    label: php{{ item }}
   notify: Restart PHP-FPM service
   tags:
     - php_setup
 
 - name: Gather PHP-FPM service facts
-  service_facts:
+  ansible.builtin.service_facts:
   tags:
     - php_setup
 
 - name: Set installed PHP-FPM services
-  set_fact:
+  ansible.builtin.set_fact:
     php_installed_fpm_services: >-
       {{ services | dict2items | selectattr('key', 'match', '^php[0-9.]+-fpm(\\.service)$') | items2dict }}
   tags:
     - php_setup
 
 - name: Set active PHP-FPM services
-  set_fact:
+  ansible.builtin.set_fact:
     php_active_fpm_services: "{{ php_versions | map('regex_replace', '^(.*)$', 'php\\1-fpm.service') | list }}"
   tags:
     - php_setup
 
 - name: Show inactive PHP-FPM services
-  debug:
+  ansible.builtin.debug:
     msg: >-
       {{ php_installed_fpm_services
         | dict2items
@@ -109,7 +118,7 @@
     - php_setup
 
 - name: Show inactive PHP-FPM which should be disabled
-  debug:
+  ansible.builtin.debug:
     msg: >-
       {{ php_installed_fpm_services
         | dict2items
@@ -121,7 +130,7 @@
     - php_setup
 
 - name: Stop inactive PHP-FPM services
-  service:
+  ansible.builtin.service:
     name: "{{ item.key }}"
     state: stopped
     enabled: false
@@ -135,13 +144,13 @@
     - php_setup
 
 - name: Show active PHP-FPM services
-  debug:
+  ansible.builtin.debug:
     var: php_active_fpm_services
   tags:
     - php_setup
 
 - name: Show active PHP-FPM services which should be enabled
-  debug:
+  ansible.builtin.debug:
     msg: >-
       {{ php_installed_fpm_services
         | dict2items
@@ -153,7 +162,7 @@
     - php_setup
 
 - name: Enable active PHP-FPM services
-  service:
+  ansible.builtin.service:
     name: "{{ item.key }}"
     state: started
     enabled: true

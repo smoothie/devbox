@@ -36,9 +36,10 @@
     - git_config
 
 - name: Replace global .gitignore
-  template:
+  ansible.builtin.template:
     src: .gitignore.j2
     dest: "{{ git_config_core.excludesfile }}"
+    mode: "0644"
   tags:
     - git_config
 

@@ -1,36 +1,43 @@
 ---
 - name: Check if conftest bash completions exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ conftest_bash_completions_path }}"
   register: conftest_bash_completion_file_exists
   tags:
     - conftest_setup
 
 - name: Check if conftest binary exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ conftest_bin_path }}"
   register: conftest_binary_exists
   tags:
     - conftest_setup
 
 - name: Paste conftest download script
-  template:
+  ansible.builtin.template:
     src: download-conftest.sh.j2
     dest: /tmp/download-conftest.sh
-    mode: 0644
+    mode: "0644"
     force: false
   tags:
     - conftest_setup
 
 - name: Run conftest download script
-  command: "bash /tmp/download-conftest.sh"
+  ansible.builtin.command: bash /tmp/download-conftest.sh
   when: >
-    conftest_binary_exists.stat.exists == false
+    not conftest_binary_exists.stat.exists
+  register: conftest_has_downloaded_install_script
+  changed_when: conftest_has_downloaded_install_script.rc != 0
   tags:
     - conftest_setup
 
 - name: Check conftest bash completion for changes
-  shell: "{{ conftest_bin_path }} completion bash | cmp - {{ conftest_bash_completions_path }}"
+  ansible.builtin.shell:
+    cmd: >
+      set -euo pipefail
+      && {{ conftest_bin_path }} completion bash
+      | cmp - {{ conftest_bash_completions_path }}
+    executable: /usr/bin/env bash
   failed_when: false
   changed_when: false
   register: conftest_has_bash_completion_changes
@@ -38,9 +45,11 @@
     - conftest_setup
 
 - name: Add conftest bash completions
-  shell: "{{ conftest_bin_path }} completion bash > {{ conftest_bash_completions_path }}"
+  ansible.builtin.shell: "{{ conftest_bin_path }} completion bash > {{ conftest_bash_completions_path }}"
   when: >
     not conftest_bash_completion_file_exists.stat.exists
     or conftest_has_bash_completion_changes.stderr | length > 0
+  register: conftest_has_pasted_bash_completion
+  changed_when: conftest_has_pasted_bash_completion.rc != 0
   tags:
     - conftest_setup

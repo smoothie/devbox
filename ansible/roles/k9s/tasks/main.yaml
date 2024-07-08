@@ -2,7 +2,7 @@
 # Highly inspired by geerlingguy.docker/tasks/docker-compose.yaml
 
 - name: Check current k9s version
-  command: "{{ k9s_bin_path }} --version"
+  ansible.builtin.command: "{{ k9s_bin_path }} --version"
   register: k9s_vsn
   check_mode: false
   changed_when: false
@@ -10,7 +10,8 @@
   tags:
     - k9s_setup
 
-- set_fact:
+- name: Remember current installed k9s version
+  ansible.builtin.set_fact:
     k9s_current_version: "{{ k9s_vsn.stdout | regex_search('(\\d+(\\.\\d+)+)') }}"
   when: >
     k9s_vsn.stdout is defined
@@ -19,7 +20,7 @@
     - k9s_setup
 
 - name: Delete existing k9s version if it's different
-  file:
+  ansible.builtin.file:
     path: "{{ k9s_bin_path }}"
     state: absent
   when: >
@@ -29,9 +30,12 @@
     - k9s_setup
 
 - name: Make sure k9s tmp path directory exists
-  file:
+  ansible.builtin.file:
     path: "{{ k9s_tmp_dir }}"
     state: directory
+    owner: root
+    group: root
+    mode: "0755"
   when: >
     (k9s_current_version is not defined)
     or (k9s_current_version | length == 0)
@@ -40,11 +44,11 @@
     - k9s_setup
 
 - name: Download k9s into tmp path
-  unarchive:
+  ansible.builtin.unarchive:
     src: "{{ k9s_download_url }}"
     dest: "{{ k9s_tmp_dir }}"
     remote_src: true
-    mode: 0755
+    mode: "0755"
   register: k9s_download
   when: >
     (k9s_current_version is not defined)
@@ -53,25 +57,31 @@
   tags:
     - k9s_setup
 
-- name: Copy k9s binary into place
-  copy:
+# TODO: Consider using a handler
+- name: Copy k9s binary into place # noqa: no-handler
+  ansible.builtin.copy:
     src: "{{ k9s_tmp_path }}"
     dest: "{{ k9s_bin_path }}"
-    mode: 0755
+    mode: "0755"
     remote_src: true
   when: k9s_download is changed
   tags:
     - k9s_setup
 
 - name: Check if k9s bash completions exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ k9s_bash_completions_path }}"
   register: k9s_bash_completion_file_exists
   tags:
     - k9s_setup
 
 - name: Check k9s bash completion for changes
-  shell: "{{ k9s_bin_path }} completion bash | cmp - {{ k9s_bash_completions_path }}"
+  ansible.builtin.shell:
+    cmd: >
+      set -euo pipefail
+      && {{ k9s_bin_path }} completion bash
+      | cmp - {{ k9s_bash_completions_path }}
+    executable: /usr/bin/env bash
   failed_when: false
   changed_when: false
   register: k9s_has_bash_completion_changes
@@ -79,9 +89,11 @@
     - k9s_setup
 
 - name: Add k9s bash completions
-  shell: "{{ k9s_bin_path }} completion bash > {{ k9s_bash_completions_path }}"
+  ansible.builtin.shell: "{{ k9s_bin_path }} completion bash > {{ k9s_bash_completions_path }}"
   when: >
     not k9s_bash_completion_file_exists.stat.exists
     or k9s_has_bash_completion_changes.stderr | length > 0
+  register: k9s_bash_completions_has_been_added
+  changed_when: k9s_bash_completions_has_been_added.rc != 0
   tags:
     - k9s_setup

@@ -5,14 +5,14 @@ php_group: www-data
 php_ini:
   error_reporting: "-1"
   display_errors: "On"
-  memory_limit: "2048M"
-  timezone: "UTC"
+  memory_limit: 2048M
+  timezone: UTC
   default_socket_timeout: "180"
   max_input_time: "300"
   max_execution_time: "180"
 
 php_xdebug:
-  mode: "debug"
+  mode: debug
   client_host: 10.0.2.2
   client_port: 9000
   discover_client_host: 1
@@ -678,82 +678,92 @@ php_packages:
 
 php_ini_changes:
   "8.3":
-    - {regexp: "^error_reporting = .*", line: "error_reporting = {{ php_ini.error_reporting }}"}
-    - {regexp: "^display_errors = .*", line: "display_errors = {{ php_ini.display_errors }}"}
-    - {regexp: "^memory_limit = .*", line: "memory_limit = {{ php_ini.memory_limit }}"}
-    - {regexp: "^;date.timezone.*", line: "date.timezone = {{ php_ini.timezone }}"}
-    - {regexp: "^max_execution_time = .*", line: "max_execution_time = {{ php_ini.max_execution_time }}"}
-    - {regexp: "^max_input_time = .*", line: "max_input_time = {{ php_ini.max_input_time }}"}
-    - {regexp: "^default_socket_timeout = .*", line: "default_socket_timeout = {{ php_ini.default_socket_timeout }}"}
+    - { regexp: ^error_reporting = .*, line: "error_reporting = {{ php_ini.error_reporting }}" }
+    - { regexp: ^display_errors = .*, line: "display_errors = {{ php_ini.display_errors }}" }
+    - { regexp: ^memory_limit = .*, line: "memory_limit = {{ php_ini.memory_limit }}" }
+    - { regexp: ^;date.timezone.*, line: "date.timezone = {{ php_ini.timezone }}" }
+    - { regexp: ^max_execution_time = .*, line: "max_execution_time = {{ php_ini.max_execution_time }}" }
+    - { regexp: ^max_input_time = .*, line: "max_input_time = {{ php_ini.max_input_time }}" }
+    - regexp: ^default_socket_timeout = .*
+      line: default_socket_timeout = {{ php_ini.default_socket_timeout }}
   "8.2":
-    - {regexp: "^error_reporting = .*", line: "error_reporting = {{ php_ini.error_reporting }}"}
-    - {regexp: "^display_errors = .*", line: "display_errors = {{ php_ini.display_errors }}"}
-    - {regexp: "^memory_limit = .*", line: "memory_limit = {{ php_ini.memory_limit }}"}
-    - {regexp: "^;date.timezone.*", line: "date.timezone = {{ php_ini.timezone }}"}
-    - {regexp: "^max_execution_time = .*", line: "max_execution_time = {{ php_ini.max_execution_time }}"}
-    - {regexp: "^max_input_time = .*", line: "max_input_time = {{ php_ini.max_input_time }}"}
-    - {regexp: "^default_socket_timeout = .*", line: "default_socket_timeout = {{ php_ini.default_socket_timeout }}"}
+    - { regexp: ^error_reporting = .*, line: "error_reporting = {{ php_ini.error_reporting }}" }
+    - { regexp: ^display_errors = .*, line: "display_errors = {{ php_ini.display_errors }}" }
+    - { regexp: ^memory_limit = .*, line: "memory_limit = {{ php_ini.memory_limit }}" }
+    - { regexp: ^;date.timezone.*, line: "date.timezone = {{ php_ini.timezone }}" }
+    - { regexp: ^max_execution_time = .*, line: "max_execution_time = {{ php_ini.max_execution_time }}" }
+    - { regexp: ^max_input_time = .*, line: "max_input_time = {{ php_ini.max_input_time }}" }
+    - regexp: ^default_socket_timeout = .*
+      line: default_socket_timeout = {{ php_ini.default_socket_timeout }}
   "8.1":
-    - {regexp: "^error_reporting = .*", line: "error_reporting = {{ php_ini.error_reporting }}"}
-    - {regexp: "^display_errors = .*", line: "display_errors = {{ php_ini.display_errors }}"}
-    - {regexp: "^memory_limit = .*", line: "memory_limit = {{ php_ini.memory_limit }}"}
-    - {regexp: "^;date.timezone.*", line: "date.timezone = {{ php_ini.timezone }}"}
-    - {regexp: "^max_execution_time = .*", line: "max_execution_time = {{ php_ini.max_execution_time }}"}
-    - {regexp: "^max_input_time = .*", line: "max_input_time = {{ php_ini.max_input_time }}"}
-    - {regexp: "^default_socket_timeout = .*", line: "default_socket_timeout = {{ php_ini.default_socket_timeout }}"}
+    - { regexp: ^error_reporting = .*, line: "error_reporting = {{ php_ini.error_reporting }}" }
+    - { regexp: ^display_errors = .*, line: "display_errors = {{ php_ini.display_errors }}" }
+    - { regexp: ^memory_limit = .*, line: "memory_limit = {{ php_ini.memory_limit }}" }
+    - { regexp: ^;date.timezone.*, line: "date.timezone = {{ php_ini.timezone }}" }
+    - { regexp: ^max_execution_time = .*, line: "max_execution_time = {{ php_ini.max_execution_time }}" }
+    - { regexp: ^max_input_time = .*, line: "max_input_time = {{ php_ini.max_input_time }}" }
+    - regexp: ^default_socket_timeout = .*
+      line: default_socket_timeout = {{ php_ini.default_socket_timeout }}
   "8.0":
-    - {regexp: "^error_reporting = .*", line: "error_reporting = {{ php_ini.error_reporting }}"}
-    - {regexp: "^display_errors = .*", line: "display_errors = {{ php_ini.display_errors }}"}
-    - {regexp: "^memory_limit = .*", line: "memory_limit = {{ php_ini.memory_limit }}"}
-    - {regexp: "^;date.timezone.*", line: "date.timezone = {{ php_ini.timezone }}"}
-    - {regexp: "^max_execution_time = .*", line: "max_execution_time = {{ php_ini.max_execution_time }}"}
-    - {regexp: "^max_input_time = .*", line: "max_input_time = {{ php_ini.max_input_time }}"}
-    - {regexp: "^default_socket_timeout = .*", line: "default_socket_timeout = {{ php_ini.default_socket_timeout }}"}
+    - { regexp: ^error_reporting = .*, line: "error_reporting = {{ php_ini.error_reporting }}" }
+    - { regexp: ^display_errors = .*, line: "display_errors = {{ php_ini.display_errors }}" }
+    - { regexp: ^memory_limit = .*, line: "memory_limit = {{ php_ini.memory_limit }}" }
+    - { regexp: ^;date.timezone.*, line: "date.timezone = {{ php_ini.timezone }}" }
+    - { regexp: ^max_execution_time = .*, line: "max_execution_time = {{ php_ini.max_execution_time }}" }
+    - { regexp: ^max_input_time = .*, line: "max_input_time = {{ php_ini.max_input_time }}" }
+    - regexp: ^default_socket_timeout = .*
+      line: default_socket_timeout = {{ php_ini.default_socket_timeout }}
   "7.4":
-    - {regexp: "^error_reporting = .*", line: "error_reporting = {{ php_ini.error_reporting }}"}
-    - {regexp: "^display_errors = .*", line: "display_errors = {{ php_ini.display_errors }}"}
-    - {regexp: "^memory_limit = .*", line: "memory_limit = {{ php_ini.memory_limit }}"}
-    - {regexp: "^;date.timezone.*", line: "date.timezone = {{ php_ini.timezone }}"}
-    - {regexp: "^max_execution_time = .*", line: "max_execution_time = {{ php_ini.max_execution_time }}"}
-    - {regexp: "^max_input_time = .*", line: "max_input_time = {{ php_ini.max_input_time }}"}
-    - {regexp: "^default_socket_timeout = .*", line: "default_socket_timeout = {{ php_ini.default_socket_timeout }}"}
+    - { regexp: ^error_reporting = .*, line: "error_reporting = {{ php_ini.error_reporting }}" }
+    - { regexp: ^display_errors = .*, line: "display_errors = {{ php_ini.display_errors }}" }
+    - { regexp: ^memory_limit = .*, line: "memory_limit = {{ php_ini.memory_limit }}" }
+    - { regexp: ^;date.timezone.*, line: "date.timezone = {{ php_ini.timezone }}" }
+    - { regexp: ^max_execution_time = .*, line: "max_execution_time = {{ php_ini.max_execution_time }}" }
+    - { regexp: ^max_input_time = .*, line: "max_input_time = {{ php_ini.max_input_time }}" }
+    - regexp: ^default_socket_timeout = .*
+      line: default_socket_timeout = {{ php_ini.default_socket_timeout }}
   "7.3":
-    - {regexp: "^error_reporting = .*", line: "error_reporting = {{ php_ini.error_reporting }}"}
-    - {regexp: "^display_errors = .*", line: "display_errors = {{ php_ini.display_errors }}"}
-    - {regexp: "^memory_limit = .*", line: "memory_limit = {{ php_ini.memory_limit }}"}
-    - {regexp: "^;date.timezone.*", line: "date.timezone = {{ php_ini.timezone }}"}
-    - {regexp: "^max_execution_time = .*", line: "max_execution_time = {{ php_ini.max_execution_time }}"}
-    - {regexp: "^max_input_time = .*", line: "max_input_time = {{ php_ini.max_input_time }}"}
-    - {regexp: "^default_socket_timeout = .*", line: "default_socket_timeout = {{ php_ini.default_socket_timeout }}"}
+    - { regexp: ^error_reporting = .*, line: "error_reporting = {{ php_ini.error_reporting }}" }
+    - { regexp: ^display_errors = .*, line: "display_errors = {{ php_ini.display_errors }}" }
+    - { regexp: ^memory_limit = .*, line: "memory_limit = {{ php_ini.memory_limit }}" }
+    - { regexp: ^;date.timezone.*, line: "date.timezone = {{ php_ini.timezone }}" }
+    - { regexp: ^max_execution_time = .*, line: "max_execution_time = {{ php_ini.max_execution_time }}" }
+    - { regexp: ^max_input_time = .*, line: "max_input_time = {{ php_ini.max_input_time }}" }
+    - regexp: ^default_socket_timeout = .*
+      line: default_socket_timeout = {{ php_ini.default_socket_timeout }}
   "7.2":
-    - {regexp: "^error_reporting = .*", line: "error_reporting = {{ php_ini.error_reporting }}"}
-    - {regexp: "^display_errors = .*", line: "display_errors = {{ php_ini.display_errors }}"}
-    - {regexp: "^memory_limit = .*", line: "memory_limit = {{ php_ini.memory_limit }}"}
-    - {regexp: "^;date.timezone.*", line: "date.timezone = {{ php_ini.timezone }}"}
-    - {regexp: "^max_execution_time = .*", line: "max_execution_time = {{ php_ini.max_execution_time }}"}
-    - {regexp: "^max_input_time = .*", line: "max_input_time = {{ php_ini.max_input_time }}"}
-    - {regexp: "^default_socket_timeout = .*", line: "default_socket_timeout = {{ php_ini.default_socket_timeout }}"}
+    - { regexp: ^error_reporting = .*, line: "error_reporting = {{ php_ini.error_reporting }}" }
+    - { regexp: ^display_errors = .*, line: "display_errors = {{ php_ini.display_errors }}" }
+    - { regexp: ^memory_limit = .*, line: "memory_limit = {{ php_ini.memory_limit }}" }
+    - { regexp: ^;date.timezone.*, line: "date.timezone = {{ php_ini.timezone }}" }
+    - { regexp: ^max_execution_time = .*, line: "max_execution_time = {{ php_ini.max_execution_time }}" }
+    - { regexp: ^max_input_time = .*, line: "max_input_time = {{ php_ini.max_input_time }}" }
+    - regexp: ^default_socket_timeout = .*
+      line: default_socket_timeout = {{ php_ini.default_socket_timeout }}
   "7.1":
-    - {regexp: "^error_reporting = .*", line: "error_reporting = {{ php_ini.error_reporting }}"}
-    - {regexp: "^display_errors = .*", line: "display_errors = {{ php_ini.display_errors }}"}
-    - {regexp: "^memory_limit = .*", line: "memory_limit = {{ php_ini.memory_limit }}"}
-    - {regexp: "^;date.timezone.*", line: "date.timezone = {{ php_ini.timezone }}"}
-    - {regexp: "^max_execution_time = .*", line: "max_execution_time = {{ php_ini.max_execution_time }}"}
-    - {regexp: "^max_input_time = .*", line: "max_input_time = {{ php_ini.max_input_time }}"}
-    - {regexp: "^default_socket_timeout = .*", line: "default_socket_timeout = {{ php_ini.default_socket_timeout }}"}
+    - { regexp: ^error_reporting = .*, line: "error_reporting = {{ php_ini.error_reporting }}" }
+    - { regexp: ^display_errors = .*, line: "display_errors = {{ php_ini.display_errors }}" }
+    - { regexp: ^memory_limit = .*, line: "memory_limit = {{ php_ini.memory_limit }}" }
+    - { regexp: ^;date.timezone.*, line: "date.timezone = {{ php_ini.timezone }}" }
+    - { regexp: ^max_execution_time = .*, line: "max_execution_time = {{ php_ini.max_execution_time }}" }
+    - { regexp: ^max_input_time = .*, line: "max_input_time = {{ php_ini.max_input_time }}" }
+    - regexp: ^default_socket_timeout = .*
+      line: default_socket_timeout = {{ php_ini.default_socket_timeout }}
   "7.0":
-    - {regexp: "^error_reporting = .*", line: "error_reporting = {{ php_ini.error_reporting }}"}
-    - {regexp: "^display_errors = .*", line: "display_errors = {{ php_ini.display_errors }}"}
-    - {regexp: "^memory_limit = .*", line: "memory_limit = {{ php_ini.memory_limit }}"}
-    - {regexp: "^;date.timezone.*", line: "date.timezone = {{ php_ini.timezone }}"}
-    - {regexp: "^max_execution_time = .*", line: "max_execution_time = {{ php_ini.max_execution_time }}"}
-    - {regexp: "^max_input_time = .*", line: "max_input_time = {{ php_ini.max_input_time }}"}
-    - {regexp: "^default_socket_timeout = .*", line: "default_socket_timeout = {{ php_ini.default_socket_timeout }}"}
+    - { regexp: ^error_reporting = .*, line: "error_reporting = {{ php_ini.error_reporting }}" }
+    - { regexp: ^display_errors = .*, line: "display_errors = {{ php_ini.display_errors }}" }
+    - { regexp: ^memory_limit = .*, line: "memory_limit = {{ php_ini.memory_limit }}" }
+    - { regexp: ^;date.timezone.*, line: "date.timezone = {{ php_ini.timezone }}" }
+    - { regexp: ^max_execution_time = .*, line: "max_execution_time = {{ php_ini.max_execution_time }}" }
+    - { regexp: ^max_input_time = .*, line: "max_input_time = {{ php_ini.max_input_time }}" }
+    - regexp: ^default_socket_timeout = .*
+      line: default_socket_timeout = {{ php_ini.default_socket_timeout }}
   "5.6":
-    - {regexp: "^error_reporting = .*", line: "error_reporting = {{ php_ini.error_reporting }}"}
-    - {regexp: "^display_errors = .*", line: "display_errors = {{ php_ini.display_errors }}"}
-    - {regexp: "^memory_limit = .*", line: "memory_limit = {{ php_ini.memory_limit }}"}
-    - {regexp: "^;date.timezone.*", line: "date.timezone = {{ php_ini.timezone }}"}
-    - {regexp: "^max_execution_time = .*", line: "max_execution_time = {{ php_ini.max_execution_time }}"}
-    - {regexp: "^max_input_time = .*", line: "max_input_time = {{ php_ini.max_input_time }}"}
-    - {regexp: "^default_socket_timeout = .*", line: "default_socket_timeout = {{ php_ini.default_socket_timeout }}"}
+    - { regexp: ^error_reporting = .*, line: "error_reporting = {{ php_ini.error_reporting }}" }
+    - { regexp: ^display_errors = .*, line: "display_errors = {{ php_ini.display_errors }}" }
+    - { regexp: ^memory_limit = .*, line: "memory_limit = {{ php_ini.memory_limit }}" }
+    - { regexp: ^;date.timezone.*, line: "date.timezone = {{ php_ini.timezone }}" }
+    - { regexp: ^max_execution_time = .*, line: "max_execution_time = {{ php_ini.max_execution_time }}" }
+    - { regexp: ^max_input_time = .*, line: "max_input_time = {{ php_ini.max_input_time }}" }
+    - regexp: ^default_socket_timeout = .*
+      line: default_socket_timeout = {{ php_ini.default_socket_timeout }}

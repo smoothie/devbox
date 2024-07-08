@@ -1,34 +1,35 @@
 ---
 - name: Check if k0s binary exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ k0s_bin_path }}"
   register: k0s_binary_exists
   tags:
     - k0s_setup
 
 - name: Check if k0s bash completions exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ k0s_bash_completions_path }}"
   register: k0s_bash_completion_file_exists
   tags:
     - k0s_setup
 
 - name: Check if k0sctl binary exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ k0s_k0sctl_bin_path }}"
   register: k0s_k0sctl_binary_exists
   tags:
     - k0s_setup
 
 - name: Check if k0sctl bash completions exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ k0s_k0sctl_bash_completions_path }}"
   register: k0s_k0sctl_bash_completion_file_exists
   tags:
     - k0s_setup
 
-- name: Check if k0s service exists
-  command: "systemctl is-enabled {{ k0s_service_name }}"
+# TODO: Double check using "systemd_service" or "service_facts"
+- name: Check if k0s service exists # noqa command-instead-of-module
+  ansible.builtin.command: systemctl is-enabled {{ k0s_service_name }}
   failed_when: false
   changed_when: false
   register: k0s_is_service_enabled
@@ -36,20 +37,20 @@
     - k0s_setup
 
 - name: Download k0s installer
-  get_url:
+  ansible.builtin.get_url:
     url: https://get.k0s.sh
     dest: "{{ k0s_installer_tmp_bin_path }}"
-    mode: 0775
+    mode: "0775"
   when: >
     not k0s_binary_exists.stat.exists
   tags:
     - k0s_setup
 
 - name: Download k0sctl binary
-  get_url:
+  ansible.builtin.get_url:
     url: "{{ k0s_k0sctl_download_url }}"
     dest: "{{ k0s_k0sctl_tmp_bin_path }}"
-    mode: 0775
+    mode: "0775"
   when: >
     not k0s_k0sctl_binary_exists.stat.exists
     and k0s_k0sctl_enabled
@@ -57,7 +58,7 @@
     - k0s_setup
 
 - name: Copy temporary k0sctl to binary path
-  copy:
+  ansible.builtin.copy:
     remote_src: true
     src: "{{ k0s_k0sctl_tmp_bin_path }}"
     dest: "{{ k0s_k0sctl_bin_path }}"
@@ -69,39 +70,55 @@
     - k0s_setup
 
 - name: Execute the k0s-installer.sh
-  shell: "{{ k0s_installer_tmp_bin_path }}{{ k0s_installer_version }}"
+  ansible.builtin.command: "{{ k0s_installer_tmp_bin_path }}{{ k0s_installer_version }}"
   when: >
     not k0s_binary_exists.stat.exists
+  register: k0s_installer_executed
+  changed_when: k0s_installer_executed.rc != 0
   tags:
     - k0s_setup
 
 - name: Make sure cluster config directory exists
-  file:
+  ansible.builtin.file:
     path: "{{ k0s_cluster_config_path | dirname }}"
     state: directory
+    owner: root
+    group: root
+    mode: "0644"
   when: >
     k0s_cluster_config_path is defined and k0s_cluster_config_path
   tags:
     - k0s_setup
 
 - name: Paste the cluster config
-  template:
+  ansible.builtin.template:
     src: cluster-config.yaml.j2
     dest: "{{ k0s_cluster_config_path }}"
+    user: root
+    group: root
+    mode: "0644"
   when: >
     k0s_cluster_config_path is defined and k0s_cluster_config_path
   tags:
     - k0s_setup
 
 - name: Install k0s as a service
-  command: "{{ k0s_bin_path }} install controller {{ k0s_service_install_args }}{{ k0s_cluster_config_args }}"
+  ansible.builtin.command: >-
+    {{ k0s_bin_path }} install controller {{ k0s_service_install_args }}{{ k0s_cluster_config_args }}
   when: >
     'No such file or directory' in k0s_is_service_enabled.stderr
+  register: k0s_service_has_been_installed
+  changed_when: k0s_service_has_been_installed.rc != 0
   tags:
     - k0s_setup
 
 - name: Check k0s bash completion for changes
-  shell: "{{ k0s_bin_path }} completion bash | cmp - {{ k0s_bash_completions_path }}"
+  ansible.builtin.shell:
+    cmd: >
+      set -euo pipefail
+      && {{ k0s_bin_path }} completion bash
+      | cmp - {{ k0s_bash_completions_path }}
+    executable: /usr/bin/env bash
   failed_when: false
   changed_when: false
   register: k0s_has_bash_completion_changes
@@ -109,15 +126,22 @@
     - k0s_setup
 
 - name: Add k0s bash completions
-  shell: "{{ k0s_bin_path }} completion bash > {{ k0s_bash_completions_path }}"
+  ansible.builtin.shell: "{{ k0s_bin_path }} completion bash > {{ k0s_bash_completions_path }}"
   when: >
     not k0s_bash_completion_file_exists.stat.exists
     or k0s_has_bash_completion_changes.stderr | length > 0
+  register: k0s_k0sctl_bash_completions_file_exists
+  changed_when: k0s_k0sctl_bash_completions_file_exists.rc != 0
   tags:
     - k0s_setup
 
 - name: Check k0sctl bash completion for changes
-  shell: "{{ k0s_k0sctl_bin_path }} completion bash | cmp - {{ k0s_k0sctl_bash_completions_path }}"
+  ansible.builtin.shell:
+    cmd: >
+      set -euo pipefail
+      && {{ k0s_k0sctl_bin_path }} completion bash
+      | cmp - {{ k0s_k0sctl_bash_completions_path }}
+    executable: /usr/bin/env bash
   failed_when: false
   changed_when: false
   register: k0s_k0sctl_has_bash_completion_changes
@@ -127,25 +151,32 @@
     - k0s_setup
 
 - name: Add k0sctl bash completions
-  shell: "{{ k0s_k0sctl_bin_path }} completion bash > {{ k0s_k0sctl_bash_completions_path }}"
+  ansible.builtin.shell: "{{ k0s_k0sctl_bin_path }} completion bash > {{ k0s_k0sctl_bash_completions_path }}"
   when: >
     k0s_k0sctl_enabled and
     (not k0s_k0sctl_bash_completion_file_exists.stat.exists
     or k0s_k0sctl_has_bash_completion_changes.stderr | length > 0)
+  register: k0s_k0sctl_bash_completions_has_been_added
+  changed_when: k0s_k0sctl_bash_completions_has_been_added.rc != 0
   tags:
     - k0s_setup
 
 - name: Start k0s as a service
-  command: "{{ k0s_bin_path }} start"
+  ansible.builtin.command: "{{ k0s_bin_path }} start"
   when: >
     k0s_is_service_enabled.stdout != 'enabled'
+  register: k0s_service_has_been_started
+  changed_when: k0s_service_has_been_started.rc != 0
   tags:
     - k0s_setup
 
 - name: Make sure users k0s directory exists
-  file:
+  ansible.builtin.file:
     path: "{{ k0s_kube_config_path | dirname }}"
     state: directory
+    owner: root
+    group: root
+    mode: "0644"
   when: >
     k0s_kube_config_path is defined
     and k0s_kube_config_path
@@ -155,7 +186,7 @@
     - k0s_setup
 
 - name: Make sure k0s service is in a running state
-  service:
+  ansible.builtin.service:
     name: k0scontroller
     state: started
   register: k0s_controller_state
@@ -166,7 +197,8 @@
     - k0s_setup
 
 - name: Wait for pods to get created
-  shell: "{{ k0s_bin_path }} kubectl get pods --all-namespaces --output=jsonpath='{.items[*].metadata.name}'"
+  ansible.builtin.shell: >-
+    {{ k0s_bin_path }} kubectl get pods --all-namespaces --output=jsonpath='{.items[*].metadata.name}'
   register: k0s_status_of_all_pods
   until: item in k0s_status_of_all_pods.stdout
   retries: 20
@@ -181,7 +213,8 @@
     - k0s_setup
 
 - name: Wait for pods to get ready
-  command: "{{ k0s_bin_path }} kubectl wait pod --all --for=condition=Ready --namespace=kube-system --timeout=600s"
+  ansible.builtin.command: >-
+    {{ k0s_bin_path }} kubectl wait pod --all --for=condition=Ready --namespace=kube-system --timeout=600s
   register: k0s_result_of_waiting_for_pods
   changed_when:
     - k0s_result_of_waiting_for_pods.delta | regex_search('[0-9]+\\.[0-9]+') | float > 1
@@ -191,10 +224,13 @@
 # Used to connect to kubectl (e.g. when using something like helm)
 # See: https://docs.k0sproject.io/v1.28.4+k0s.0/FAQ/?h=kubectl#how-do-i-connect-to-the-cluster
 - name: Copy k0s config for usage with kubectl
-  copy:
+  ansible.builtin.copy:
     src: "{{ k0s_kube_config_template_path }}"
     dest: "{{ k0s_kube_config_path }}"
     remote_src: true
+    user: root
+    group: root
+    mode: "0644"
   when: >
     k0s_kube_config_path is defined
     and k0s_kube_config_path

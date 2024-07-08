@@ -7,10 +7,10 @@ git_config_init:
   defaultBranch: main
 
 git_config_excludesfile_items:
-  - ".idea/"
-  - ".vscode/"
-  - ".DS_Store"
-  - "Thumbs.db"
-  - "npm-debug.log"
+  - .idea/
+  - .vscode/
+  - .DS_Store
+  - Thumbs.db
+  - npm-debug.log
   - "*~"
   - "*.log"

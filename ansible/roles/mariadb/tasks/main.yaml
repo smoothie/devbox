@@ -7,14 +7,14 @@
     - mariadb_setup
 
 - name: Install MariaDB packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ mariadb_packages }}"
     state: present
   tags:
     - mariadb_setup
 
 - name: Start MariaDB service
-  service:
+  ansible.builtin.service:
     name: mariadb
     state: started
     enabled: true
@@ -33,18 +33,24 @@
     - mariadb_setup
 
 - name: Replace users my.cnf
-  template:
+  ansible.builtin.template:
     src: user.cnf.j2
     dest: "{{ item.value.path }}"
+    owner: root
+    group: root
+    mode: "0644"
   loop: "{{ mariadb_users | dict2items | selectattr('value.path') | list }}"
   no_log: true
   tags:
     - mariadb_setup
 
 - name: Replace mysqld.cnf
-  template:
+  ansible.builtin.template:
     src: mysqld.cnf.j2
     dest: "{{ mariadb_paths.mysqld_config }}"
+    owner: root
+    group: root
+    mode: "0644"
   notify: Restart MariaDB service
   tags:
     - mariadb_setup

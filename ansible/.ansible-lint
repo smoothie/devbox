@@ -1,0 +1,10 @@
+---
+use_default_rules: true
+
+write_list:
+  - all
+
+exclude_paths:
+  - roles/geerlingguy.*/
+  - roles/gantsign.*/
+  - roles/roots.*/

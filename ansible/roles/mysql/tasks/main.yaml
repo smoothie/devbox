@@ -7,14 +7,14 @@
     - mysql_setup
 
 - name: Install MySQL packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ mysql_packages }}"
     state: present
   tags:
     - mysql_setup
 
 - name: Start MySQL service
-  service:
+  ansible.builtin.service:
     name: mysql
     state: started
     enabled: true
@@ -33,18 +33,24 @@
     - mysql_setup
 
 - name: Replace users my.cnf
-  template:
+  ansible.builtin.template:
     src: user.cnf.j2
     dest: "{{ item.value.path }}"
+    owner: root
+    group: root
+    mode: "0644"
   loop: "{{ mysql_users | dict2items | selectattr('value.path') | list }}"
   no_log: true
   tags:
     - mysql_setup
 
 - name: Replace mysqld.cnf
-  template:
+  ansible.builtin.template:
     src: mysqld.cnf.j2
     dest: "{{ mysql_paths.mysqld_config }}"
+    owner: root
+    group: root
+    mode: "0644"
   notify: Restart MySQL service
   tags:
     - mysql_setup

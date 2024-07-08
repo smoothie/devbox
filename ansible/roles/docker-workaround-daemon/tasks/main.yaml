@@ -17,8 +17,8 @@
     - docker_workaround
 
 - name: Docker - override systemd service unit
-  copy:
-    dest: "/etc/systemd/system/docker.service.d/override.conf"
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/docker.service.d/override.conf
     content: |
       [Service]
       ExecStart=
@@ -30,7 +30,8 @@
   tags:
     - docker_workaround
 
-- name: Force systemd to re-read config
+# TODO: Consider using a handler
+- name: Force systemd to re-read config # noqa: no-handler
   ansible.builtin.systemd:
     daemon_reload: true
   when: docker_workaround_daemon_systemd_changed.changed
