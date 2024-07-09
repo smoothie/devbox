@@ -24,7 +24,9 @@ jobs:
       - name: Install test dependencies.
         run: pip3 install docker yamllint ansible-lint ansible-core
       - name: Install Ansible dependencies.
-        run: ansible-galaxy install --role-file requirements.yaml
+        run: |
+          ansible-galaxy collection install community.general
+          ansible-galaxy install --role-file requirements.yaml
       - name: Run checks
         run: bash qa.sh
         env:
