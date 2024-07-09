@@ -22,7 +22,7 @@ mariadb_users:
   root:
     password: secret
     host: 127.0.0.1
-      path: /root/.my.cnf
+    path: /root/.my.cnf
     # no need to rewrite root privileges, as root should only be accessible from the machine
 
   devman:
