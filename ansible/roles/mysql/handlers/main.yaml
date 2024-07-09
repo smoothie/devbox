@@ -1,7 +1,7 @@
 ---
--   name: Restart MySQL service
-    service:
-        name: mysql
-        state: restarted
-    tags:
-        - mysql_handler_restarted
+- name: Restart MySQL service
+  ansible.builtin.service:
+    name: mysql
+    state: restarted
+  tags:
+    - mysql_handler_restarted

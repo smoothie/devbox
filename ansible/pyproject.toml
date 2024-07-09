@@ -1,0 +1,10 @@
+[project]
+name = "smoothie.devbox"
+version = "0.0.1"
+
+dependencies = [
+  "docker",
+  "yamllint",
+  "ansible-lint",
+  "ansible-core",
+]

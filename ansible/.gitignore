@@ -1,0 +1,11 @@
+# config
+*.ini
+
+/*_vars/*.yml
+/*_vars/*.yaml
+
+# 3rd party roles
+/roles/geerlingguy.*/
+/roles/gantsign.*/
+/roles/roots.*/
+.cache/
