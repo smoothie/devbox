@@ -26,6 +26,7 @@ jobs:
       - name: Install Ansible dependencies.
         run: |
           ansible-galaxy collection install community.general
+          ansible-galaxy collection install community.mysql
           ansible-galaxy install --role-file requirements.yaml
       - name: Run checks
         run: bash qa.sh
