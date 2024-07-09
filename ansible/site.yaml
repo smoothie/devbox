@@ -51,8 +51,8 @@
     - role: php
       become: true
       vars:
-        php_user: "{{ host_user }}"
-        php_group: "{{ host_group }}"
+        php_user: "{{ host_user | default('vagrant') }}"
+        php_group: "{{ host_group | default('vagrant') }}"
       when: webservers_stack.php | default(true)
       tags:
         - php
@@ -79,8 +79,8 @@
     - role: apache2
       become: true
       vars:
-        apache2_user: "{{ host_user }}"
-        apache2_group: "{{ host_group }}"
+        apache2_user: "{{ host_user | default('vagrant') }}"
+        apache2_group: "{{ host_group | default('vagrant') }}"
       when: webservers_stack.apache2 | default(true)
       tags:
         - apache2
@@ -88,8 +88,8 @@
     - role: nvm
       become: true
       vars:
-        nvm_user: "{{ host_user }}"
-        nvm_group: "{{ host_group }}"
+        nvm_user: "{{ host_user | default('vagrant') }}"
+        nvm_group: "{{ host_group | default('vagrant') }}"
       when: webservers_stack.nvm | default(true)
       tags:
         - nvm
@@ -126,7 +126,7 @@
     - role: geerlingguy.docker
       become: true
       vars:
-        docker_users: "{{ [ host_user ] + docker_config.users | default([]) | select() | list }}"
+        docker_users: "{{ [ host_user | default('vagrant') ] + docker_config.users | default([]) | select() | list }}"
         docker_install_compose: false
         docker_install_compose_plugin: docker_config.install_compose | true
         docker_apt_filename: "{{ docker_config.apt_filename | default(omit) }}"
