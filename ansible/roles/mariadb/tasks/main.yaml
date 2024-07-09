@@ -50,7 +50,7 @@
     dest: "{{ mariadb_paths.mysqld_config }}"
     owner: root
     group: root
-  #    mode: "0644"
+    mode: "0644"
   notify: Restart MariaDB service
   tags:
     - mariadb_setup
