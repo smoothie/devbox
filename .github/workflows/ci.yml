@@ -11,6 +11,9 @@ jobs:
   check-ansible:
     name: Ansible
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./ansible
     steps:
       - name: Checkout the codebase.
         uses: actions/checkout@v4
@@ -23,7 +26,7 @@ jobs:
       - name: Install Ansible dependencies.
         run: ansible-galaxy install --role-file requirements.yaml
       - name: Run checks
-        run: bash ansible/qa.sh
+        run: bash qa.sh
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLORS: '1'
