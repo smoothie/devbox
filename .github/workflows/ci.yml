@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: '3.x'
       - name: Install test dependencies.
-        run: pip3 install docker yamllint ansible-lint
+        run: pip3 install docker yamllint ansible-lint ansible-core
       - name: Run checks
         run: bash ansible/qa.sh
         env:
