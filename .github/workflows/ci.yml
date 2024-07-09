@@ -4,8 +4,8 @@ on:
   pull_request:
   push:
     branches:
-      development
-      main
+      - development
+      - main
 
 jobs:
   check-ansible:
