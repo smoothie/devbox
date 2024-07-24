@@ -1,7 +1,9 @@
 <VirtualHost *:80>
     ServerAdmin {{ item.value.apache2_server_admin }}
     ServerName {{ item.key }}
+{% if item.value.apache2_server_aliases | default(false) %}
     ServerAlias {{ item.value.apache2_server_aliases | join(' ') }}
+{% endif %}
     DocumentRoot {{ item.value.apache2_document_root }}
 
 {% if item.value.apache2_resource_fallback is defined %}
