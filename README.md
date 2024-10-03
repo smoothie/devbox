@@ -95,6 +95,7 @@ this devbox.
         - [x] Conftest
         - [x] gcloud SDK
         - [x] Mailpit
+        - [x] LDAP
 
 ### TODO
 
