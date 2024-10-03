@@ -129,3 +129,18 @@ mailpit_release_url: https://github.com/axllent/mailpit/releases/latest/download
 #  - "7.1"
 #  - "7.1"
 #  - "5.6"
+
+ldap_basedn: dc=some,dc=local
+ldap_server_uri: ldap://localhost:389
+ldap_bind_pw: secret
+ldap_users:
+  some_guy:
+    cn: Some Guy
+    givenname: some
+    sn: guy
+    mail: some@example.com
+    userpassword: secret
+ldap_groups:
+  - name: Group
+    members:
+      - some_guy

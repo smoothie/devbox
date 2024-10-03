@@ -223,3 +223,9 @@
       when: webservers_stack.mailpit | default(false)
       tags:
         - mailpit
+
+    - role: capitanh.openldap-ansible-role
+      become: true
+      when: webservers_stack.ldap | default(false)
+      tags:
+        - ldap

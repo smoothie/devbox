@@ -28,3 +28,6 @@
 
 - name: roots.mailpit
   version: v1.0.0
+
+- name: capitanh.openldap-ansible-role
+  version: master
