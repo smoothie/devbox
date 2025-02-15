@@ -132,7 +132,7 @@
         docker_apt_filename: "{{ docker_config.apt_filename | default(omit) }}"
         docker_daemon_options:
           containerd: /run/containerd/containerd.sock
-          bip: "{{ docker_config.bip | default('192.168.70.1/32') }}"
+          bip: "{{ docker_config.bip | default('192.168.70.1/24') }}"
           hosts:
             - tcp://0.0.0.0:2375
             - unix:///var/run/docker.sock
