@@ -4,6 +4,22 @@
     "memory": "2048",
     "cpus": 2,
     "should_guest_know_the_host_network": false,
+    "forwarded_ports": [
+        {
+            "guest": 80,
+            "host": 8000,
+            "auto_correct": true
+        },
+        {
+            "guest": 443,
+            "host": 44300,
+            "auto_correct": true
+        },
+        {
+            "guest": 2375,
+            "host": 42375
+        }
+    ],
     "disks": {
         "default": {
             "size": "42GB"
@@ -11,8 +27,8 @@
     },
     "folders": [
         {
-            "from": "../../some-project",
-            "to": "/home/vagrant/some-project"
+            "from": "../../playground",
+            "to": "/home/vagrant/playground"
         }
     ]
 }
