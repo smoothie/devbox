@@ -27,7 +27,7 @@ apache2_sites:
         apache2_server_admin: webmaster@localhost
         apache2_server_aliases:
             - localhost
-        php_version: "8.2"
+        php_version: "8.4"
         apache2_locations:
             '/fromPath': 'http://toUrl.local.test:1337'
 
@@ -37,7 +37,7 @@ apache2_sites:
         apache2_server_aliases:
             - some-example.local.test
             - www.some-example.local.test
-        php_version: "8.2"
+        php_version: "8.4"
 
 mysql_databases:
     - devbox_mysql
@@ -119,6 +119,7 @@ mailpit_version: latest
 mailpit_release_url: https://github.com/axllent/mailpit/releases/latest/download/mailpit-linux-amd64.tar.gz
 
 #php_versions:
+#  - "8.4"
 #  - "8.3"
 #  - "8.2"
 #  - "8.1"
