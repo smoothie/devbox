@@ -3,98 +3,53 @@
 
 require 'json'
 
-unless File.exist?('./config.json')
-  puts 'Unable to find `config.json`.'
-end
+abort('Unable to find `config.json`.') unless File.exist?('./config.json')
 
-configData = JSON.parse(File.read('./config.json'))
+config_data = JSON.parse(File.read('./config.json'), symbolize_names: true)
 
-# All Vagrant configuration is done below. The "2" in Vagrant.configure
-# configures the configuration version (we support older styles for
-# backwards compatibility). Please don't change it unless you know what
-# you're doing.
+nfs_options = {
+  type: 'nfs',
+  mount_options: ['rw', 'tcp', 'nolock', 'actimeo=1'],
+  linux__nfs_options: ['rw', 'no_subtree_check', 'all_squash', 'async']
+}
+
 Vagrant.configure('2') do |config|
-  # The most common configuration options are documented and commented below.
-  # For a complete reference, please see the online documentation at
-  # https://docs.vagrantup.com.
-
-  # Every Vagrant development environment requires a box. You can search for
-  # boxes at https://vagrantcloud.com/search.
   config.vm.box = 'ubuntu/jammy64'
-  config.vm.hostname = configData['hostname']
+  config.vm.hostname = ENV.fetch('VM_HOSTNAME', config_data[:hostname])
 
-  if (configData['disks'] && configData['disks']['default'] && configData['disks']['default']['size'])
-    config.vm.disk :disk, size: configData['disks']['default']['size'], primary: true
+  if config_data.dig(:disks, :default, :size)
+    config.vm.disk :disk, size: config_data[:disks][:default][:size], primary: true
   end
 
-  # Create a forwarded port mapping which allows access to a specific port
-  # within the machine from a port on the host machine. In the example below,
-  # accessing "localhost:8080" will access port 80 on the guest machine.
-  # NOTE: This will enable public access to the opened port
-  config.vm.network 'forwarded_port', guest: 80, host: 8000, auto_correct: true
-  config.vm.network 'forwarded_port', guest: 443, host: 44300, auto_correct: true
-  config.vm.network 'forwarded_port', guest: 2375, host: 42375
-
-  # Create a forwarded port mapping which allows access to a specific port
-  # within the machine from a port on the host machine and only allow access
-  # via 127.0.0.1 to disable public access
-  # config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
-
-  # Create a private network, which allows host-only access to the machine
-  # using a specific IP.
-  config.vm.network 'private_network', ip: configData['ip']
-
-  # Share host network with guest (useful for VPNs)
-  if (configData['should_guest_know_the_host_network'])
-      config.vm.provider :virtualbox do |vb|
-        vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-      end
+  if config_data[:forwarded_ports]
+    config_data[:forwarded_ports].each do |port|
+      config.vm.network 'forwarded_port',
+                        guest: port[:guest],
+                        host: port[:host],
+                        auto_correct: port.fetch(:auto_correct, false)
+    end
   end
 
-  # Create a public network, which generally matched to bridged network.
-  # Bridged networks make the machine appear as another physical device on
-  # your network.
-  # config.vm.network "public_network"
+  config.vm.network 'private_network', ip: config_data[:ip]
 
-  # Share an additional folder to the guest VM. The first argument is
-  # the path on the host to the actual folder. The second argument is
-  # the path on the guest to mount the folder. And the optional third
-  # argument is a set of non-required options.
-  config.vm.synced_folder '../ansible', '/home/vagrant/ansible',
-    type: 'nfs',
-    mount_options: ['rw', 'tcp', 'nolock', 'actimeo=1'],
-    linux__nfs_options: ['rw', 'no_subtree_check', 'all_squash', 'async']
-
-  configData['folders'].each do |folder|
-
-    # Map config.folders into the VM
-    config.vm.synced_folder folder['from'], folder['to'],
-      type: 'nfs',
-      mount_options: ['rw', 'tcp', 'nolock', 'actimeo=1'],
-      linux__nfs_options: ['rw', 'no_subtree_check', 'all_squash', 'async']
-
+  if config_data[:should_guest_know_the_host_network]
+    config.vm.provider :virtualbox do |vb|
+      vb.customize ['modifyvm', :id, '--natdnshostresolver1', 'on']
+    end
   end
 
-  # Provider-specific configuration so you can fine-tune various
-  # backing providers for Vagrant. These expose provider-specific options.
-  # Example for VirtualBox:
+  config.vm.synced_folder '../ansible', '/home/vagrant/ansible', **nfs_options
+
+  config_data[:folders]&.each do |folder|
+    config.vm.synced_folder folder[:from], folder[:to], **nfs_options
+  end
+
   config.vm.provider 'virtualbox' do |vb|
-    # Customize the amount of memory on the VM:
-    vb.memory = configData['memory']
-
-    # Customize the amount of CPU cores on the VM:
-    vb.cpus = configData['cpus']
-
-    # Customize the name of the VM:
-    vb.name = "#{configData['hostname']}-0"
+    vb.memory = config_data[:memory]
+    vb.cpus = config_data[:cpus]
+    vb.name = "#{config_data[:hostname]}-0"
   end
 
-  # View the documentation for the provider you are using for more
-  # information on available options.
-
-  # Enable provisioning with a shell script. Additional provisioners such as
-  # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
-  # documentation for more information about their specific syntax and use.
   config.vm.provision 'shell', inline: <<-SHELL
     apt-get update
   SHELL
