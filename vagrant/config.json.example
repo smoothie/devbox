@@ -3,8 +3,10 @@
     "ip": "192.168.60.17",
     "memory": "2048",
     "cpus": 2,
+    "provider": "virtualbox",
     "ubuntu_version": "2004",
     "should_guest_know_the_host_network": false,
+    "use_gpu_passthrough": true,
     "forwarded_ports": [
         {
             "guest": 80,

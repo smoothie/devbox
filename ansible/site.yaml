@@ -10,6 +10,12 @@
       tags:
         - common
 
+    - role: nvidia-drivers
+      become: true
+      when: webservers_stack.nvidia | default(false)
+      tags:
+        - nvidia
+
     - role: geerlingguy.git
       become: true
       vars:

@@ -7,6 +7,8 @@ abort('Unable to find config.json.') unless File.exist?('./config.json')
 
 config_data = JSON.parse(File.read('./config.json'))
 ubuntu_version = config_data['ubuntu_version'] || '2004'
+provider = ENV['VAGRANT_DEFAULT_PROVIDER'] || config_data['provider'] || 'virtualbox'
+gpu_devices = config_data['gpu_devices'] || ['01:00.0', '01:00.1']
 
 Vagrant.configure('2') do |config|
   config.vm.box = "generic/ubuntu#{ubuntu_version}"
@@ -27,12 +29,6 @@ Vagrant.configure('2') do |config|
 
   config.vm.network 'private_network', ip: config_data['ip']
 
-  if config_data['should_guest_know_the_host_network']
-    config.vm.provider :virtualbox do |vb|
-      vb.customize ['modifyvm', :id, '--natdnshostresolver1', 'on']
-    end
-  end
-
   ansible_host_path = File.expand_path('../ansible', __dir__)
   config.vm.synced_folder ansible_host_path, '/home/vagrant/ansible',
     type: 'nfs',
@@ -49,9 +45,28 @@ Vagrant.configure('2') do |config|
   end
 
   config.vm.provider 'virtualbox' do |vb|
-    vb.memory = config_data['memory']
-    vb.cpus = config_data['cpus']
-    vb.name = "#{config_data['hostname']}-0"
+    if provider == 'virtualbox'
+      vb.memory = config_data['memory']
+      vb.cpus = config_data['cpus']
+      vb.name = "#{config_data['hostname']}-vbox"
+      vb.customize ['modifyvm', :id, '--natdnshostresolver1', 'on'] if config_data['should_guest_know_the_host_network']
+    end
+  end
+
+  config.vm.provider 'libvirt' do |lv|
+    lv.memory = config_data['memory']
+    lv.cpus = config_data['cpus']
+    lv.machine_type = 'q35'
+    lv.disk_bus = 'virtio'
+    lv.driver = 'kvm'
+    lv.nic_model_type = 'virtio'
+
+    if config_data['use_gpu_passthrough']
+      gpu_devices.each do |d|
+        suffix = d.end_with?('.0') ? ',multifunction=on,x-vga=on' : ''
+        lv.qemuargs :device, "vfio-pci,host=#{d}#{suffix}"
+      end
+    end
   end
 
   # Re-enable the shared "/vagrant" directory.

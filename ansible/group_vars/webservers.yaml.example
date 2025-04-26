@@ -20,6 +20,7 @@ webservers_stack:
     conftest: false
     gcloud_cli: false
     mailpit: false
+    nvidia: false
 
 apache2_sites:
     localhost:
@@ -147,3 +148,6 @@ ldap_groups:
   - name: Group
     members:
       - some_guy
+
+#nvidia_driver_ubuntu_install_from_cuda_repo: true
+nvidia_driver_branch: "535"
