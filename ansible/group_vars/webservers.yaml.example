@@ -96,6 +96,8 @@ common_extra_bash_aliases: |-
         php artisan "$@"
     }
 
+    cat /run/motd.dynamic
+
 common_apply_symlinks:
     - { source: '/opt/projects', target: '/home/vagrant/projects' }
 
