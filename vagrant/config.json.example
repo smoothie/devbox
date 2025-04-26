@@ -3,6 +3,7 @@
     "ip": "192.168.60.17",
     "memory": "2048",
     "cpus": 2,
+    "ubuntu_version": "2004",
     "should_guest_know_the_host_network": false,
     "forwarded_ports": [
         {
