@@ -3,51 +3,54 @@
 
 require 'json'
 
-abort('Unable to find `config.json`.') unless File.exist?('./config.json')
+abort('Unable to find config.json.') unless File.exist?('./config.json')
 
-config_data = JSON.parse(File.read('./config.json'), symbolize_names: true)
-
-nfs_options = {
-  type: 'nfs',
-  mount_options: ['rw', 'tcp', 'nolock', 'actimeo=1'],
-  linux__nfs_options: ['rw', 'no_subtree_check', 'all_squash', 'async']
-}
+config_data = JSON.parse(File.read('./config.json'))
 
 Vagrant.configure('2') do |config|
   config.vm.box = 'ubuntu/jammy64'
-  config.vm.hostname = ENV.fetch('VM_HOSTNAME', config_data[:hostname])
+  config.vm.hostname = config_data['hostname']
 
-  if config_data.dig(:disks, :default, :size)
-    config.vm.disk :disk, size: config_data[:disks][:default][:size], primary: true
+  if config_data.dig('disks', 'default', 'size')
+    config.vm.disk :disk, size: config_data['disks']['default']['size'], primary: true
   end
 
-  if config_data[:forwarded_ports]
-    config_data[:forwarded_ports].each do |port|
+  if config_data['forwarded_ports']
+    config_data['forwarded_ports'].each do |port|
       config.vm.network 'forwarded_port',
-                        guest: port[:guest],
-                        host: port[:host],
-                        auto_correct: port.fetch(:auto_correct, false)
+        guest: port['guest'],
+        host: port['host'],
+        auto_correct: port.fetch('auto_correct', false)
     end
   end
 
-  config.vm.network 'private_network', ip: config_data[:ip]
+  config.vm.network 'private_network', ip: config_data['ip']
 
-  if config_data[:should_guest_know_the_host_network]
+  if config_data['should_guest_know_the_host_network']
     config.vm.provider :virtualbox do |vb|
       vb.customize ['modifyvm', :id, '--natdnshostresolver1', 'on']
     end
   end
 
-  config.vm.synced_folder '../ansible', '/home/vagrant/ansible', **nfs_options
+  ansible_host_path = File.expand_path('../ansible', __dir__)
+  config.vm.synced_folder ansible_host_path, '/home/vagrant/ansible',
+    type: 'nfs',
+    mount_options: ['rw', 'tcp', 'nolock', 'actimeo=1'],
+    linux__nfs_options: ['rw', 'no_subtree_check', 'all_squash', 'async']
 
-  config_data[:folders]&.each do |folder|
-    config.vm.synced_folder folder[:from], folder[:to], **nfs_options
+  config_data['folders']&.each do |folder|
+    host_path = File.expand_path(folder['from'], __dir__)
+    guest_path = folder['to']
+    config.vm.synced_folder host_path, guest_path,
+      type: 'nfs',
+      mount_options: ['rw', 'tcp', 'nolock', 'actimeo=1'],
+      linux__nfs_options: ['rw', 'no_subtree_check', 'all_squash', 'async']
   end
 
   config.vm.provider 'virtualbox' do |vb|
-    vb.memory = config_data[:memory]
-    vb.cpus = config_data[:cpus]
-    vb.name = "#{config_data[:hostname]}-0"
+    vb.memory = config_data['memory']
+    vb.cpus = config_data['cpus']
+    vb.name = "#{config_data['hostname']}-0"
   end
 
   config.vm.provision 'shell', inline: <<-SHELL

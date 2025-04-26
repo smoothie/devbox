@@ -121,6 +121,9 @@ this devbox.
     - [ ] Upgrade pip packages
     - [ ] Upgrade composer
     - [ ] Upgrade for current used npm/node
+- [ ] QA
+  - Test the vagrant setup
+    - [ ] Check that configuration is applied as expected (mounts, virtual provider)
 
 ## Installation
 
