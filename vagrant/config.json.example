@@ -6,7 +6,6 @@
     "provider": "virtualbox",
     "ubuntu_version": "2004",
     "should_guest_know_the_host_network": false,
-    "use_gpu_passthrough": true,
     "forwarded_ports": [
         {
             "guest": 80,

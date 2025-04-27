@@ -22,6 +22,7 @@ sudo apt-mark hold vagrant-libvirt
 sudo apt-get update && \
     sudo apt-get install -y qemu libvirt-daemon-system ebtables libguestfs-tools \
         vagrant ruby-fog-libvirt
+vagrant plugin install vagrant-libvirt
 
 ```
 - [Source](https://vagrant-libvirt.github.io/vagrant-libvirt/)
@@ -56,3 +57,6 @@ sudo reboot
 ```shell
 lspci -nnk | grep -A3 VGA
 ```
+
+Check if kvm is ready:
+egrep -c '(vmx|svm)' /proc/cpuinfo

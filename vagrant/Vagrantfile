@@ -27,7 +27,7 @@ Vagrant.configure('2') do |config|
     end
   end
 
-  config.vm.network 'private_network', ip: config_data['ip']
+#  config.vm.network 'private_network', ip: config_data['ip']
 
   ansible_host_path = File.expand_path('../ansible', __dir__)
   config.vm.synced_folder ansible_host_path, '/home/vagrant/ansible',
@@ -44,29 +44,25 @@ Vagrant.configure('2') do |config|
       linux__nfs_options: ['rw', 'no_subtree_check', 'all_squash', 'async']
   end
 
-  config.vm.provider 'virtualbox' do |vb|
-    if provider == 'virtualbox'
+  if provider == 'virtualbox'
+    config.vm.provider 'virtualbox' do |vb|
       vb.memory = config_data['memory']
       vb.cpus = config_data['cpus']
       vb.name = "#{config_data['hostname']}-vbox"
       vb.customize ['modifyvm', :id, '--natdnshostresolver1', 'on'] if config_data['should_guest_know_the_host_network']
-    end
-  end
 
-  config.vm.provider 'libvirt' do |lv|
-    lv.memory = config_data['memory']
-    lv.cpus = config_data['cpus']
-    lv.machine_type = 'q35'
-    lv.disk_bus = 'virtio'
-    lv.driver = 'kvm'
-    lv.nic_model_type = 'virtio'
-
-    if config_data['use_gpu_passthrough']
-      gpu_devices.each do |d|
-        suffix = d.end_with?('.0') ? ',multifunction=on,x-vga=on' : ''
-        lv.qemuargs :device, "vfio-pci,host=#{d}#{suffix}"
-      end
+      config.vm.network 'private_network', ip: config_data['ip'], adapter: 2
     end
+  elsif provider == 'libvirt'
+    config.vm.provider 'libvirt' do |lv|
+      lv.memory = config_data['memory']
+      lv.cpus = config_data['cpus']
+      lv.graphics_type = 'none'
+
+      config.vm.network 'private_network', ip: config_data['ip'], adapter: 3
+    end
+  else
+    abort("devbox does not support the provider: #{provider}")
   end
 
   # Re-enable the shared "/vagrant" directory.
