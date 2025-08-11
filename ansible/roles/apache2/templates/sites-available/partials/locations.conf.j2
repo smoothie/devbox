@@ -1,11 +1,25 @@
 {% if item.value.apache2_locations is defined -%}
+    {% set config = item.value.apache2_locations_config if item.value.apache2_locations_config is defined else {} %}
+    {% set keepalive = config.keepalive if config.keepalive is defined else false %}
+    {% set timeout = config.timeout if config.timeout is defined else '' %}
+    {% set directives = [] %}
+    {% set attrs = [] %}
+    {% if keepalive %}
+      {% set _ = attrs.append('keepalive=On') %}
+    {% endif %}
+    {% if timeout != '' %}
+      {% set _ = attrs.append('timeout=' ~ timeout) %}
+    {% endif %}
+
     ProxyPreserveHost On
     ProxyRequests Off
 
     {% for from_path, to_url in item.value.apache2_locations.items() -%}
     <Location {{ from_path }}>
-        ProxyPass {{ to_url }}
+        ProxyPass {{ to_url }}{% if attrs|length > 0 %} {{ attrs|join(' ') }}{% endif %}
+
         ProxyPassReverse {{ to_url }}
     </Location>
+
     {% endfor %}
 {% endif %}

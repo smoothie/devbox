@@ -23,8 +23,8 @@
     block: |-
       {{ common_extra_bash_aliases }}
     marker: "# {mark} Ansible(smoothie.common): Add custom aliases"
-  register: custom_alias_changes
-  changed_when: custom_alias_changes.changed
+  register: common_custom_alias_changes
+  changed_when: common_custom_alias_changes.changed
   when: >
     common_extra_bash_aliases | default(false)
   tags:
@@ -52,7 +52,7 @@
   ansible.builtin.stat:
     path: "{{ item.source }}"
   loop: "{{ common_apply_symlinks | default([], true) }}"
-  register: check_common_existent_symlink_resources
+  register: common_check_common_existent_symlink_resources
   tags:
     - common_setup
 
@@ -61,7 +61,7 @@
     src: "{{ item.item.source }}"
     dest: "{{ item.item.target }}"
     state: link
-  loop: "{{ check_common_existent_symlink_resources.results | default([], true) }}"
+  loop: "{{ common_check_common_existent_symlink_resources.results | default([], true) }}"
   loop_control:
     label: >-
       source: {{ item.item.source | default('none', true) }},
