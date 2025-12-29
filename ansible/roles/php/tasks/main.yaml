@@ -8,14 +8,14 @@
   ansible.builtin.get_url:
     url: https://ppa.launchpadcontent.net/ondrej/php/ubuntu
     dest: /etc/apt/trusted.gpg.d/php.asc
-    mode: '0644'
+    mode: "0644"
     force: true
   tags:
     - php_setup
 
 - name: Setup PHP PPA
   apt_repository:
-    repo: "deb https://ppa.launchpadcontent.net/ondrej/php/ubuntu jammy main"
+    repo: deb https://ppa.launchpadcontent.net/ondrej/php/ubuntu jammy main
   tags:
     - php_setup
 
