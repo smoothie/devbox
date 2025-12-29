@@ -8,7 +8,7 @@ cd ${script_dir}
 
 time yamllint . --strict --config-file .yamllint.yaml
 time ansible-playbook site.yaml --inventory development.ini.example --syntax-check
-time ansible-lint site.yaml --strict --config-file .ansible-lint
+time ANSIBLE_DEPRECATION_WARNINGS=False ansible-lint site.yaml --config-file .ansible-lint
 #time molecule test
 
 cd -

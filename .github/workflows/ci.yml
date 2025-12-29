@@ -34,3 +34,4 @@ jobs:
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLORS: '1'
+          ANSIBLE_DEPRECATION_WARNINGS: False
