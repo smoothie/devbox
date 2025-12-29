@@ -14,3 +14,4 @@ git_config_excludesfile_items:
   - npm-debug.log
   - "*~"
   - "*.log"
+  - .aider*

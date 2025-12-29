@@ -29,6 +29,7 @@ php_fpm:
   pm_process_idle_timeout: 10s
 
 php_supported_versions:
+  - "8.5"
   - "8.4"
   - "8.3"
   - "8.2"
@@ -42,6 +43,68 @@ php_supported_versions:
   - "5.6"
 
 php_packages:
+  "8.5":
+    - php8.5
+    - php8.5-amqp
+    - php8.5-bcmath
+    - php8.5-bz2
+    - php8.5-calendar
+    - php8.5-cgi
+    - php8.5-cli
+    - php8.5-common
+    - php8.5-ctype
+    - php8.5-curl
+    - php8.5-dba
+    - php8.5-dev
+    - php8.5-dom
+    - php8.5-enchant
+    - php8.5-exif
+    - php8.5-ffi
+    - php8.5-fileinfo
+    - php8.5-fpm
+    - php8.5-ftp
+    - php8.5-gd
+    - php8.5-gettext
+    - php8.5-gmp
+    - php8.5-iconv
+    - php8.5-imagick
+    - php8.5-imap
+    - php8.5-interbase
+    - php8.5-intl
+    - php8.5-ldap
+    - php8.5-mbstring
+    - php8.5-memcached
+    - php8.5-mysql
+    - php8.5-mysqli
+    - php8.5-mysqlnd
+    - php8.5-odbc
+    - php8.5-pdo
+    - php8.5-pgsql
+    - php8.5-phar
+    - php8.5-phpdbg
+    - php8.5-posix
+    - php8.5-pspell
+    - php8.5-readline
+    - php8.5-redis
+    - php8.5-shmop
+    - php8.5-simplexml
+    - php8.5-snmp
+    - php8.5-soap
+    - php8.5-sockets
+    - php8.5-sqlite3
+    - php8.5-sybase
+    - php8.5-sysvmsg
+    - php8.5-sysvsem
+    - php8.5-sysvshm
+    - php8.5-tidy
+    - php8.5-tokenizer
+    - php8.5-xdebug
+    - php8.5-xml
+    - php8.5-xmlreader
+    - php8.5-xmlrpc
+    - php8.5-xmlwriter
+    - php8.5-xsl
+    - php8.5-zip
   "8.4":
     - php8.4
     - php8.4-amqp
@@ -741,6 +804,25 @@ php_packages:
     - php5.6-zip
 
 php_ini_changes:
+  "8.5":
+    # yamllint disable rule:quoted-strings
+    - { regexp: ^error_reporting = .*, line: "error_reporting = {{ php_ini.error_reporting }}" }
+    - { regexp: ^display_errors = .*, line: "display_errors = {{ php_ini.display_errors }}" }
+    - { regexp: ^memory_limit = .*, line: "memory_limit = {{ php_ini.memory_limit }}" }
+    - { regexp: ^;date.timezone.*, line: "date.timezone = {{ php_ini.timezone }}" }
+    - { regexp: ^max_execution_time = .*, line: "max_execution_time = {{ php_ini.max_execution_time }}" }
+    - { regexp: ^max_input_time = .*, line: "max_input_time = {{ php_ini.max_input_time }}" }
+    - regexp: ^default_socket_timeout = .*
+      line: default_socket_timeout = {{ php_ini.default_socket_timeout }}
+  "8.4":
+    - { regexp: ^error_reporting = .*, line: "error_reporting = {{ php_ini.error_reporting }}" }
+    - { regexp: ^display_errors = .*, line: "display_errors = {{ php_ini.display_errors }}" }
+    - { regexp: ^memory_limit = .*, line: "memory_limit = {{ php_ini.memory_limit }}" }
+    - { regexp: ^;date.timezone.*, line: "date.timezone = {{ php_ini.timezone }}" }
+    - { regexp: ^max_execution_time = .*, line: "max_execution_time = {{ php_ini.max_execution_time }}" }
+    - { regexp: ^max_input_time = .*, line: "max_input_time = {{ php_ini.max_input_time }}" }
+    - regexp: ^default_socket_timeout = .*
+      line: default_socket_timeout = {{ php_ini.default_socket_timeout }}
   "8.3":
     - { regexp: ^error_reporting = .*, line: "error_reporting = {{ php_ini.error_reporting }}" }
     - { regexp: ^display_errors = .*, line: "display_errors = {{ php_ini.display_errors }}" }
@@ -831,3 +913,4 @@ php_ini_changes:
     - { regexp: ^max_input_time = .*, line: "max_input_time = {{ php_ini.max_input_time }}" }
     - regexp: ^default_socket_timeout = .*
       line: default_socket_timeout = {{ php_ini.default_socket_timeout }}
+    # yamllint enable rule:quoted-strings
