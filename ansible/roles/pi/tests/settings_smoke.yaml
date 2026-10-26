@@ -4,13 +4,19 @@
   connection: local
   gather_facts: false
   vars:
+    pi_enable_install_telemetry: "{{ pi_role_defaults.pi_enable_install_telemetry }}"
+    pi_enable_analytics: "{{ pi_role_defaults.pi_enable_analytics }}"
     pi_tasks_version: 0.9.1
     pi_subagents_version: 0.22.0
     pi_settings:
       quietStartup: true
+      enableInstallTelemetry: true
+      enableAnalytics: true
     pi_existing_config:
       settings.json:
         theme: dark
+        enableInstallTelemetry: true
+        enableAnalytics: true
         packages:
           - npm:unrelated-package
           - source: npm:@tintinweb/pi-tasks@0.1.0
@@ -19,6 +25,11 @@
           - npm:@tintinweb/pi-tasks
           - npm:@tintinweb/pi-subagents@0.1.0
   tasks:
+    - name: Load actual role defaults without overriding test inputs
+      ansible.builtin.include_vars:
+        file: ../defaults/main.yaml
+        name: pi_role_defaults
+
     - name: Render pinned package settings
       ansible.builtin.set_fact:
         pi_rendered_settings: "{{ lookup('ansible.builtin.template', '../templates/settings.json.j2') | from_json }}"
@@ -28,11 +39,28 @@
         that:
           - pi_rendered_settings.theme == 'dark'
           - pi_rendered_settings.quietStartup
+          - pi_rendered_settings.enableInstallTelemetry is sameas false
+          - pi_rendered_settings.enableAnalytics is sameas false
+          - "'telemetry' not in pi_rendered_settings"
           - pi_rendered_settings.packages | length == 3
           - pi_rendered_settings.packages[0] == 'npm:unrelated-package'
           - pi_rendered_settings.packages[1].source == 'npm:@tintinweb/pi-tasks@0.9.1'
           - pi_rendered_settings.packages[1].extensions == ['src/index.ts']
           - pi_rendered_settings.packages[2] == 'npm:@tintinweb/pi-subagents@0.22.0'
+
+    - name: Render the managed Pi launcher with privacy defaults
+      ansible.builtin.set_fact:
+        pi_rendered_launcher: "{{ lookup('ansible.builtin.template', '../templates/command.sh.j2') }}"
+      vars:
+        item: pi
+        pi_home: /tmp/devbox-pi-privacy
+        pi_agent_dir: /tmp/devbox-pi-privacy/.pi/agent
+        pi_install_dir: /tmp/devbox-pi-privacy/.local/share/devbox-pi
+
+    - name: Verify the launcher overrides inherited telemetry opt-ins
+      ansible.builtin.assert:
+        that:
+          - "'export PI_TELEMETRY=false' in pi_rendered_launcher"
 
     - name: Use rendered settings as the existing configuration
       ansible.builtin.set_fact:
@@ -58,3 +86,18 @@
           - pi_rendered_settings.packages | length == 3
           - pi_rendered_settings.packages[1].source == 'npm:@tintinweb/pi-tasks'
           - pi_rendered_settings.packages[2] == 'npm:@tintinweb/pi-subagents'
+
+    - name: Deliberately opt in through dedicated role variables
+      ansible.builtin.set_fact:
+        pi_enable_install_telemetry: true
+        pi_enable_analytics: true
+
+    - name: Render the explicit opt-in
+      ansible.builtin.set_fact:
+        pi_rendered_settings: "{{ lookup('ansible.builtin.template', '../templates/settings.json.j2') | from_json }}"
+
+    - name: Verify opt-in requires an explicit role setting
+      ansible.builtin.assert:
+        that:
+          - pi_rendered_settings.enableInstallTelemetry is sameas true
+          - pi_rendered_settings.enableAnalytics is sameas true

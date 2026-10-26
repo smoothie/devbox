@@ -1,0 +1,11 @@
+.git
+**/.ansible
+**/.cache
+**/__pycache__
+**/*.pyc
+.venv
+ansible/development.ini
+ansible/group_vars/*.yaml
+ansible/group_vars/*.yml
+ansible/host_vars/*.yaml
+ansible/host_vars/*.yml

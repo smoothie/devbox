@@ -2,6 +2,7 @@
 set -euo pipefail
 export HOME={{ pi_home | quote }}
 export PI_CODING_AGENT_DIR={{ pi_agent_dir | quote }}
+export PI_TELEMETRY={{ (pi_enable_install_telemetry | bool | ternary('true', 'false')) | quote }}
 export PATH={{ (pi_install_dir ~ '/node/bin:' ~ pi_install_dir ~ '/npm/bin:') | quote }}"$PATH"
 export npm_config_prefix={{ (pi_install_dir ~ '/npm') | quote }}
 export npm_config_legacy_peer_deps=true

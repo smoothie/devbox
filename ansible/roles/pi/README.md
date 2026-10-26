@@ -25,7 +25,7 @@ must already exist; remove the example project entry when no rollout is needed.
 
 ```bash
 cd ansible
-ansible-galaxy collection install community.general community.mysql
+ansible-galaxy collection install --requirements-file collections/requirements.yaml
 ansible-galaxy install --role-file requirements.yaml
 ansible-playbook site.yaml -i development.ini --tags pi
 export PATH="$HOME/.local/bin:$PATH"
@@ -37,6 +37,27 @@ Authenticate the model through `/login` inside Pi. The role never writes
 `auth.json`, `models.json`, tokens, or provider credentials. Use `/reload` in an
 existing Pi session after provisioning; a fresh shell picks up a newly installed
 `~/.local/bin` through Ubuntu's standard profile.
+
+## Privacy defaults
+
+Every Ansible run writes `enableInstallTelemetry: false` and
+`enableAnalytics: false` to the user's `settings.json`, including when an existing
+configuration has either flag enabled. Unrelated settings remain intact. These
+flags take precedence over `pi_settings` so replacing that dictionary does not
+silently re-enable reporting.
+
+The Pi launcher, provisioning environment, and maintenance script also set
+`PI_TELEMETRY=false`, overriding an inherited opt-in. These are Pi's documented
+settings, not an unsupported `telemetry.enabled` object. This does not disable
+update checks, provider API requests, or independently configured third-party
+MCP services.
+
+Explicit opt-in is available only through the role variables:
+
+```yaml
+pi_enable_install_telemetry: true
+pi_enable_analytics: true
+```
 
 ## Runtime and updates
 

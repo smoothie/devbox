@@ -28,4 +28,8 @@
 {% set merged.packages = merged.packages + [identity if version == 'latest' else identity ~ '@' ~ version] %}
 {% endif %}
 {% endfor %}
-{{ existing | combine(pi_settings) | combine({'packages': merged.packages}) | to_nice_json }}
+{{ existing | combine(pi_settings) | combine({
+  'packages': merged.packages,
+  'enableInstallTelemetry': pi_enable_install_telemetry | bool,
+  'enableAnalytics': pi_enable_analytics | bool
+}) | to_nice_json }}

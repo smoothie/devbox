@@ -19,6 +19,8 @@ pi_update_schedule_enabled: true
 pi_update_weekday: "1"
 pi_update_hour: "6"
 pi_update_minute: "15"
+pi_enable_install_telemetry: false
+pi_enable_analytics: false
 pi_settings: {}
 pi_mcp_servers: {}
 pi_context7_env: {}

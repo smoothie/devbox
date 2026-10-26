@@ -7,9 +7,20 @@
 - name: Validate PHP repository distribution
   ansible.builtin.assert:
     that:
-      - ansible_distribution == 'Ubuntu'
-      - ansible_distribution_release in ['jammy', 'noble']
+      - ansible_facts.distribution == 'Ubuntu'
+      - ansible_facts.distribution_release in ['jammy', 'noble']
     fail_msg: The PHP PPA supports Jammy and Noble; newer Ubuntu releases require a reviewed Sury migration.
+  tags:
+    - php_setup
+
+- name: Install PHP repository prerequisites
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - python3-apt
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
   tags:
     - php_setup
 
@@ -21,12 +32,10 @@
   tags:
     - php_setup
 
-- name: Add PHP PPA repository key
-  ansible.builtin.get_url:
-    url: >-
-      https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xB8DC7E53946656EFBCE4C1DD71DAEAAB4AD4CAB6
+- name: Install reviewed PHP PPA repository key
+  ansible.builtin.copy:
+    src: ondrej-php.asc
     dest: /etc/apt/keyrings/devbox-php.asc
-    checksum: sha256:1bed18eabeccc647b731492b1fbfcb1a916dc03d63557dc7e2c1007e79901a71
     mode: "0644"
   tags:
     - php_setup
@@ -53,7 +62,7 @@
   ansible.builtin.apt_repository:
     repo: >-
       deb [signed-by=/etc/apt/keyrings/devbox-php.asc]
-      https://ppa.launchpadcontent.net/ondrej/php/ubuntu {{ ansible_distribution_release }} main
+      https://ppa.launchpadcontent.net/ondrej/php/ubuntu {{ ansible_facts.distribution_release }} main
     filename: devbox-php
     update_cache: true
   tags:
@@ -66,23 +75,6 @@
   loop: "{{ php_versions }}"
   loop_control:
     label: php{{ item }}
-  tags:
-    - php_setup
-
-- name: Show PHP packages which should be enabled
-  ansible.builtin.debug:
-    msg: phpenmod -v {{ item }} {{ php_packages[item] | select('search', '.*-.*') | join(' ') }}
-  loop: "{{ php_versions }}"
-  tags:
-    - php_setup
-
-- name: Enable PHP packages
-  ansible.builtin.command: phpenmod -v {{ item }} {{ php_packages[item] | select('search', '.*-.*') | join(' ') }}
-  loop: "{{ php_versions }}"
-  loop_control:
-    label: php{{ item }}
-  register: php_packages_have_been_enabled
-  changed_when: php_packages_have_been_enabled.rc != 0
   tags:
     - php_setup
 
@@ -145,81 +137,28 @@
 - name: Set installed PHP-FPM services
   ansible.builtin.set_fact:
     php_installed_fpm_services: >-
-      {{ services | dict2items | selectattr('key', 'match', '^php[0-9.]+-fpm(\\.service)$') | items2dict }}
-  tags:
-    - php_setup
-
-- name: Set active PHP-FPM services
-  ansible.builtin.set_fact:
-    php_active_fpm_services: "{{ php_versions | map('regex_replace', '^(.*)$', 'php\\1-fpm.service') | list }}"
-  tags:
-    - php_setup
-
-- name: Show inactive PHP-FPM services
-  ansible.builtin.debug:
-    msg: >-
-      {{ php_installed_fpm_services
-        | dict2items
-        | rejectattr('key', 'in', php_active_fpm_services)
-        | map(attribute='key')
-        | list }}
-  tags:
-    - php_setup
-
-- name: Show inactive PHP-FPM which should be disabled
-  ansible.builtin.debug:
-    msg: >-
-      {{ php_installed_fpm_services
-        | dict2items
-        | selectattr('value.status', 'eq', 'enabled')
-        | rejectattr('key', 'in', php_active_fpm_services)
-        | map(attribute='key')
-        | list }}
+      {{ ansible_facts.services | dict2items
+        | selectattr('key', 'match', '^php[0-9.]+-fpm([.]service)?$') | list }}
+    php_active_fpm_services: >-
+      {{ php_versions | map('regex_replace', '^', 'php') | map('regex_replace', '$', '-fpm') | list }}
   tags:
     - php_setup
 
 - name: Stop inactive PHP-FPM services
   ansible.builtin.service:
-    name: "{{ item.key }}"
+    name: "{{ item.key | regex_replace('[.]service$', '') }}"
     state: stopped
     enabled: false
-  loop: >-
-    {{ php_installed_fpm_services
-      | dict2items
-      | selectattr('value.status', 'eq', 'enabled')
-      | rejectattr('key', 'in', php_active_fpm_services)
-      | list }}
-  tags:
-    - php_setup
-
-- name: Show active PHP-FPM services
-  ansible.builtin.debug:
-    var: php_active_fpm_services
-  tags:
-    - php_setup
-
-- name: Show active PHP-FPM services which should be enabled
-  ansible.builtin.debug:
-    msg: >-
-      {{ php_installed_fpm_services
-        | dict2items
-        | selectattr('value.status', 'ne', 'enabled')
-        | selectattr('key', 'in', php_active_fpm_services)
-        | map(attribute='key')
-        | list }}
+  loop: "{{ php_installed_fpm_services }}"
+  when: (item.key | regex_replace('[.]service$', '')) not in php_active_fpm_services
   tags:
     - php_setup
 
 - name: Enable active PHP-FPM services
   ansible.builtin.service:
-    name: "{{ item.key }}"
+    name: php{{ item }}-fpm
     state: started
     enabled: true
-  loop: >-
-    {{ php_installed_fpm_services
-      | dict2items
-      | selectattr('value.status', 'ne', 'enabled')
-      | selectattr('key', 'in', php_active_fpm_services)
-      | list }}
+  loop: "{{ php_versions }}"
   tags:
     - php_setup
