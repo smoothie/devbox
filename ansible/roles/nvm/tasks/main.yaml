@@ -1,24 +1,55 @@
 ---
-- name: Download nvm installer
-  ansible.builtin.get_url:
-    url: https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.4/install.sh
-    dest: /tmp/nvm-installer.sh
-    mode: "0777"
+- name: Inspect installed nvm
+  ansible.builtin.stat:
+    path: "{{ nvm_home }}/.nvm/nvm.sh"
+  register: nvm_script
   tags:
     - nvm_setup
 
-- name: Execute the nvm-installer.sh
-  ansible.builtin.command: /tmp/nvm-installer.sh
+- name: Detect installed nvm version
+  ansible.builtin.command:
+    argv:
+      - bash
+      - -c
+      - . "$1/.nvm/nvm.sh" --no-use; nvm --version
+      - bash
+      - "{{ nvm_home }}"
   become: true
   become_user: "{{ nvm_user }}"
-  register: nvm_installer_has_been_executed
-  changed_when: nvm_installer_has_been_executed.rc != 0
+  environment:
+    HOME: "{{ nvm_home }}"
+  register: nvm_installed_version
+  changed_when: false
+  when: nvm_script.stat.exists
   tags:
     - nvm_setup
 
-- name: Remove nvm-installer.sh
-  ansible.builtin.file:
-    path: /tmp/nvm-installer.sh
-    state: absent
+- name: Install or update nvm
+  become: true
+  become_user: "{{ nvm_user }}"
+  environment:
+    HOME: "{{ nvm_home }}"
+    NVM_DIR: "{{ nvm_home }}/.nvm"
+  when: not nvm_script.stat.exists or nvm_installed_version.stdout != nvm_version | regex_replace('^v', '')
   tags:
     - nvm_setup
+  block:
+    - name: Download user-owned nvm installer
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh
+        dest: "{{ nvm_home }}/.nvm-installer.sh"
+        mode: "0700"
+
+    - name: Execute nvm installer
+      ansible.builtin.command:
+        argv:
+          - bash
+          - "{{ nvm_home }}/.nvm-installer.sh"
+      register: nvm_install_result
+      changed_when: nvm_install_result.rc == 0
+
+  always:
+    - name: Remove user-owned nvm installer
+      ansible.builtin.file:
+        path: "{{ nvm_home }}/.nvm-installer.sh"
+        state: absent

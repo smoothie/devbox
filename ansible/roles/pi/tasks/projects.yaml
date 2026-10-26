@@ -1,0 +1,32 @@
+---
+- name: Validate project instruction destinations
+  ansible.builtin.assert:
+    that:
+      - item.path is match('^/')
+      - item.path != '/'
+      - item.path | length > 1
+  loop: "{{ pi_projects }}"
+
+- name: Inspect configured projects
+  ansible.builtin.stat:
+    path: "{{ item.path }}"
+  loop: "{{ pi_projects }}"
+  register: pi_project_directories
+
+- name: Require existing project directories
+  ansible.builtin.assert:
+    that:
+      - item.stat.isdir | default(false)
+    fail_msg: "Project must already exist: {{ item.item.path }}"
+  loop: "{{ pi_project_directories.results }}"
+
+- name: Distribute default project instructions without replacing existing files
+  ansible.builtin.template:
+    src: "{{ item.template | default(pi_agents_template) }}"
+    dest: "{{ item.path }}/AGENTS.md"
+    owner: "{{ item.owner | default(pi_user) }}"
+    group: "{{ item.group | default(pi_group) }}"
+    mode: "0644"
+    force: "{{ item.force | default(pi_agents_force) }}"
+    backup: true
+  loop: "{{ pi_projects }}"

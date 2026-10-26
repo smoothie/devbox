@@ -1,0 +1,60 @@
+---
+- name: Verify Pi package configuration reconciliation
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    pi_tasks_version: 0.9.1
+    pi_subagents_version: 0.22.0
+    pi_settings:
+      quietStartup: true
+    pi_existing_config:
+      settings.json:
+        theme: dark
+        packages:
+          - npm:unrelated-package
+          - source: npm:@tintinweb/pi-tasks@0.1.0
+            extensions:
+              - src/index.ts
+          - npm:@tintinweb/pi-tasks
+          - npm:@tintinweb/pi-subagents@0.1.0
+  tasks:
+    - name: Render pinned package settings
+      ansible.builtin.set_fact:
+        pi_rendered_settings: "{{ lookup('ansible.builtin.template', '../templates/settings.json.j2') | from_json }}"
+
+    - name: Verify pins and preserved configuration
+      ansible.builtin.assert:
+        that:
+          - pi_rendered_settings.theme == 'dark'
+          - pi_rendered_settings.quietStartup
+          - pi_rendered_settings.packages | length == 3
+          - pi_rendered_settings.packages[0] == 'npm:unrelated-package'
+          - pi_rendered_settings.packages[1].source == 'npm:@tintinweb/pi-tasks@0.9.1'
+          - pi_rendered_settings.packages[1].extensions == ['src/index.ts']
+          - pi_rendered_settings.packages[2] == 'npm:@tintinweb/pi-subagents@0.22.0'
+
+    - name: Use rendered settings as the existing configuration
+      ansible.builtin.set_fact:
+        pi_existing_config: "{{ {'settings.json': pi_rendered_settings} }}"
+
+    - name: Verify repeated rendering is stable
+      ansible.builtin.assert:
+        that:
+          - lookup('ansible.builtin.template', '../templates/settings.json.j2') | from_json == pi_rendered_settings
+
+    - name: Select floating package versions
+      ansible.builtin.set_fact:
+        pi_tasks_version: latest
+        pi_subagents_version: latest
+
+    - name: Render floating package settings
+      ansible.builtin.set_fact:
+        pi_rendered_settings: "{{ lookup('ansible.builtin.template', '../templates/settings.json.j2') | from_json }}"
+
+    - name: Verify version pins are removed without duplicates
+      ansible.builtin.assert:
+        that:
+          - pi_rendered_settings.packages | length == 3
+          - pi_rendered_settings.packages[1].source == 'npm:@tintinweb/pi-tasks'
+          - pi_rendered_settings.packages[2] == 'npm:@tintinweb/pi-subagents'

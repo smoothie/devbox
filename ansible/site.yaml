@@ -94,6 +94,12 @@
       tags:
         - nvm
 
+    - role: pi
+      when: webservers_stack.pi | default(false)
+      tags:
+        - pi
+        - pi_setup
+
     - role: gantsign.golang
       when: webservers_stack.golang | default(false)
       tags:

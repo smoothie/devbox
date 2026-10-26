@@ -5,6 +5,7 @@ webservers_stack:
     mariadb: false
     mysql: true
     nvm: true
+    pi: false
     golang: false
     redis: false
     memcached: false
@@ -44,6 +45,12 @@ mysql_databases:
 
 mariadb_databases:
     - devbox_mariadb
+
+pi_projects:
+    - path: /home/vagrant/projects/example
+
+pi_agents_force: false
+pi_update_schedule_enabled: true
 
 golang_version: 1.21.0
 

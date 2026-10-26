@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+export HOME={{ pi_home | quote }}
+export PI_CODING_AGENT_DIR={{ pi_agent_dir | quote }}
+export PATH={{ (pi_install_dir ~ '/node/bin:' ~ pi_install_dir ~ '/npm/bin:') | quote }}"$PATH"
+export npm_config_prefix={{ (pi_install_dir ~ '/npm') | quote }}
+export npm_config_legacy_peer_deps=true
+exec 9>{{ (pi_install_dir ~ '/update.lock') | quote }}
+flock -n 9 || exit 0
+cd {{ pi_install_dir | quote }}
+npm install --global --ignore-scripts \
+  {{ ('@earendil-works/pi-coding-agent@' ~ pi_package_version) | quote }} \
+  {{ ('agent-browser@' ~ pi_browser_version) | quote }} \
+  {{ ('@upstash/context7-mcp@' ~ pi_context7_version) | quote }} \
+  {{ ('@bytebase/dbhub@' ~ pi_dbhub_version) | quote }}
+npm install --prefix {{ (pi_agent_dir ~ '/npm') | quote }} --ignore-scripts \
+  {{ ('@tintinweb/pi-tasks@' ~ pi_tasks_version) | quote }} \
+  {{ ('@tintinweb/pi-subagents@' ~ pi_subagents_version) | quote }}
+{% if pi_install_browser %}
+agent-browser install
+{% endif %}
+pi --version
+pi mcp list

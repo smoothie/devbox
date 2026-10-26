@@ -1,0 +1,43 @@
+---
+pi_user: "{{ host_user | default('vagrant') }}"
+pi_group: "{{ host_group | default(pi_user) }}"
+pi_home: /home/{{ pi_user }}
+pi_agent_dir: "{{ pi_home }}/.pi/agent"
+pi_install_dir: "{{ pi_home }}/.local/share/devbox-pi"
+pi_bin_dir: "{{ pi_home }}/.local/bin"
+pi_node_major: "24"
+pi_node_version: latest
+pi_package_version: latest
+pi_browser_version: latest
+pi_context7_version: latest
+pi_dbhub_version: latest
+pi_tasks_version: latest
+pi_subagents_version: latest
+pi_install_browser: true
+pi_install_system_dependencies: true
+pi_update_schedule_enabled: true
+pi_update_weekday: "1"
+pi_update_hour: "6"
+pi_update_minute: "15"
+pi_settings: {}
+pi_mcp_servers: {}
+pi_context7_env: {}
+pi_tasks_settings:
+  taskScope: session-global
+  autoCascade: false
+pi_database_connections:
+  - name: sqlite
+    dsn: sqlite://{{ pi_agent_dir }}/databases/scratch.sqlite
+    enabled: true
+  - name: postgresql
+    dsn: ${PI_POSTGRES_DSN}
+    enabled: false
+  - name: mysql
+    dsn: ${PI_MYSQL_DSN}
+    enabled: false
+  - name: mariadb
+    dsn: ${PI_MARIADB_DSN}
+    enabled: false
+pi_projects: []
+pi_agents_template: AGENTS.md.j2
+pi_agents_force: false

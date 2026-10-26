@@ -1,0 +1,84 @@
+---
+- name: Verify isolated Pi provisioning
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  vars:
+    pi_user: "{{ ansible_user_id }}"
+    pi_group: "{{ ansible_user_gid }}"
+    pi_home: /tmp/devbox-pi-smoke
+    pi_install_system_dependencies: false
+    pi_update_schedule_enabled: false
+    pi_settings:
+      quietStartup: true
+    pi_mcp_servers:
+      retained-server:
+        command: unused-test-command
+        enabled: false
+    pi_projects:
+      - path: /tmp/devbox-pi-smoke/project
+      - path: /tmp/devbox-pi-smoke/existing-project
+  pre_tasks:
+    - name: Create isolated test home and project
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: "0700"
+      loop:
+        - "{{ pi_home }}"
+        - "{{ pi_home }}/project"
+        - "{{ pi_home }}/existing-project"
+
+    - name: Seed existing project instructions
+      ansible.builtin.copy:
+        content: Existing project instructions must survive provisioning.
+        dest: "{{ pi_home }}/existing-project/AGENTS.md"
+        force: false
+        mode: "0644"
+  roles:
+    - role: pi
+  tasks:
+    - name: Read preserved project instructions
+      ansible.builtin.slurp:
+        src: "{{ pi_home }}/existing-project/AGENTS.md"
+      register: pi_smoke_existing_agents
+
+    - name: Verify project instructions were not overwritten
+      ansible.builtin.assert:
+        that:
+          - >-
+            pi_smoke_existing_agents.content | b64decode ==
+            'Existing project instructions must survive provisioning.'
+
+    - name: Verify Pi executable
+      ansible.builtin.command: "{{ pi_bin_dir }}/pi --version"
+      changed_when: false
+
+    - name: Verify enabled MCP connections
+      ansible.builtin.command: "{{ pi_bin_dir }}/pi mcp list"
+      changed_when: false
+
+    - name: Verify browser navigation
+      ansible.builtin.command: "{{ pi_bin_dir }}/agent-browser --session devbox-smoke open https://example.com"
+      changed_when: false
+      register: pi_smoke_browser
+
+    - name: Verify page title
+      ansible.builtin.assert:
+        that:
+          - "'Example Domain' in pi_smoke_browser.stdout"
+
+    - name: Close test browser
+      ansible.builtin.command: "{{ pi_bin_dir }}/agent-browser --session devbox-smoke close"
+      changed_when: false
+
+    - name: Verify MCP tool execution and read-only database policy
+      ansible.builtin.command:
+        argv:
+          - python3
+          - "{{ playbook_dir }}/mcp_smoke.py"
+          - --bin-dir
+          - "{{ pi_bin_dir }}"
+          - --agent-dir
+          - "{{ pi_agent_dir }}"
+      changed_when: false

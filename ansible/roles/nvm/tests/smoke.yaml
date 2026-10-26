@@ -1,0 +1,42 @@
+---
+- name: Verify isolated nvm installation and version detection
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  vars:
+    nvm_user: "{{ ansible_user_id }}"
+    nvm_home: /tmp/devbox-nvm-smoke
+  pre_tasks:
+    - name: Create isolated nvm home
+      ansible.builtin.file:
+        path: "{{ nvm_home }}"
+        state: directory
+        mode: "0700"
+
+    - name: Create isolated shell profile
+      ansible.builtin.copy:
+        content: ""
+        dest: "{{ nvm_home }}/.bashrc"
+        mode: "0600"
+        force: false
+  roles:
+    - role: nvm
+  tasks:
+    - name: Verify requested nvm version
+      ansible.builtin.command:
+        argv:
+          - bash
+          - -c
+          - . "$1/.nvm/nvm.sh" --no-use; nvm --version
+          - bash
+          - "{{ nvm_home }}"
+      environment:
+        HOME: "{{ nvm_home }}"
+        NVM_DIR: "{{ nvm_home }}/.nvm"
+      register: nvm_smoke_version
+      changed_when: false
+
+    - name: Assert nvm version
+      ansible.builtin.assert:
+        that:
+          - nvm_smoke_version.stdout == nvm_version | regex_replace('^v', '')

@@ -24,13 +24,16 @@ this devbox.
 
 ## Features
 
+- **AI coding environment:** Optional [Pi role](ansible/roles/pi/README.md) with Context7,
+  PostgreSQL/SQLite/MySQL/MariaDB MCP tools, integrated tasks and subagents, Vercel
+  agent-browser, scheduled updates, and safe default `AGENTS.md` rollout.
 - **Custom System Dependencies:** Automatic setup of essential development tools
     - HTTP
         - [x] apache2
         - [ ] nginx
         - [ ] with SSL support
     - Code
-        - [x] PHP (5.6 - 8.3)
+        - [x] PHP (5.6 - 8.5; legacy releases require explicit compatibility review)
             - [x] XDebug support
             - [x] Composer
         - [x] JavaScript
@@ -131,7 +134,18 @@ TBD
 
 ## Usage
 
-TBD
+Enable `webservers_stack.pi: true` in the existing inventory to provision the AI
+coding environment, then run:
+
+```bash
+cd ansible
+ansible-playbook site.yaml -i development.ini --tags pi
+```
+
+See the [Pi role guide](ansible/roles/pi/README.md) for prerequisites, authentication,
+database targets, updates, and default project instruction distribution.
+See the [maintenance review](docs/maintenance-review.md) for verified download fixes
+and remaining infrastructure upgrade risks.
 
 ## Contributing
 

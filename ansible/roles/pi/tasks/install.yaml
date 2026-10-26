@@ -1,0 +1,134 @@
+---
+- name: Create Pi directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0700"
+  loop:
+    - "{{ pi_install_dir }}"
+    - "{{ pi_install_dir }}/npm"
+    - "{{ pi_agent_dir }}"
+    - "{{ pi_agent_dir }}/npm"
+    - "{{ pi_agent_dir }}/databases"
+    - "{{ pi_agent_dir }}/skills/agent-browser"
+    - "{{ pi_bin_dir }}"
+
+- name: Resolve current Node LTS release
+  ansible.builtin.uri:
+    url: https://nodejs.org/dist/index.json
+    return_content: true
+  register: pi_node_releases
+  when: pi_node_version == 'latest'
+  check_mode: false
+
+- name: Select Node runtime
+  ansible.builtin.set_fact:
+    pi_resolved_node_version: >-
+      {{ (pi_node_releases.json | selectattr('version', 'match', '^v' ~ pi_node_major ~ '\.')
+          | rejectattr('lts', 'equalto', false) | first).version
+          if pi_node_version == 'latest' else 'v' ~ (pi_node_version | regex_replace('^v', '')) }}
+    pi_node_arch: "{{ 'x64' if ansible_architecture == 'x86_64' else 'arm64' }}"
+
+- name: Download checksum-verified Node archive
+  ansible.builtin.get_url:
+    url: >-
+      https://nodejs.org/dist/{{ pi_resolved_node_version
+      }}/node-{{ pi_resolved_node_version }}-linux-{{ pi_node_arch }}.tar.xz
+    checksum: sha256:https://nodejs.org/dist/{{ pi_resolved_node_version }}/SHASUMS256.txt
+    dest: "{{ pi_install_dir }}/node-{{ pi_resolved_node_version }}-linux-{{ pi_node_arch }}.tar.xz"
+    mode: "0600"
+
+- name: Extract Node runtime
+  ansible.builtin.unarchive:
+    src: "{{ pi_install_dir }}/node-{{ pi_resolved_node_version }}-linux-{{ pi_node_arch }}.tar.xz"
+    dest: "{{ pi_install_dir }}"
+    remote_src: true
+    creates: "{{ pi_install_dir }}/node-{{ pi_resolved_node_version }}-linux-{{ pi_node_arch }}/bin/node"
+
+- name: Select active Node runtime
+  ansible.builtin.file:
+    src: "{{ pi_install_dir }}/node-{{ pi_resolved_node_version }}-linux-{{ pi_node_arch }}"
+    dest: "{{ pi_install_dir }}/node"
+    state: link
+
+- name: Install current Pi and MCP executables
+  community.general.npm:
+    name: "{{ item.name }}"
+    version: "{{ omit if item.version == 'latest' else item.version }}"
+    state: "{{ 'latest' if item.version == 'latest' else 'present' }}"
+    global: true
+    ignore_scripts: true
+    executable: "{{ pi_install_dir }}/node/bin/npm"
+  loop:
+    - name: "@earendil-works/pi-coding-agent"
+      version: "{{ pi_package_version }}"
+    - name: agent-browser
+      version: "{{ pi_browser_version }}"
+    - name: "@upstash/context7-mcp"
+      version: "{{ pi_context7_version }}"
+    - name: "@bytebase/dbhub"
+      version: "{{ pi_dbhub_version }}"
+
+- name: Install interoperable task and subagent packages
+  community.general.npm:
+    name: "{{ item.name }}"
+    version: "{{ omit if item.version == 'latest' else item.version }}"
+    state: "{{ 'latest' if item.version == 'latest' else 'present' }}"
+    path: "{{ pi_agent_dir }}/npm"
+    ignore_scripts: true
+    executable: "{{ pi_install_dir }}/node/bin/npm"
+  loop:
+    - name: "@tintinweb/pi-tasks"
+      version: "{{ pi_tasks_version }}"
+    - name: "@tintinweb/pi-subagents"
+      version: "{{ pi_subagents_version }}"
+
+- name: Install user command wrappers
+  ansible.builtin.template:
+    src: command.sh.j2
+    dest: "{{ pi_bin_dir }}/{{ item }}"
+    mode: "0755"
+  loop:
+    - pi
+    - agent-browser
+    - context7-mcp
+    - dbhub
+
+- name: Install browser system libraries
+  ansible.builtin.apt:
+    name:
+      - libnss3
+      - libnspr4
+      - "{{ 'libatk1.0-0t64' if ansible_distribution_major_version | int >= 24 else 'libatk1.0-0' }}"
+      - "{{ 'libatk-bridge2.0-0t64' if ansible_distribution_major_version | int >= 24 else 'libatk-bridge2.0-0' }}"
+      - "{{ 'libcups2t64' if ansible_distribution_major_version | int >= 24 else 'libcups2' }}"
+      - libdrm2
+      - libdbus-1-3
+      - libx11-6
+      - libxcb1
+      - libxcomposite1
+      - libxdamage1
+      - libxext6
+      - libxfixes3
+      - libxrandr2
+      - libgbm1
+      - libxkbcommon0
+      - libpango-1.0-0
+      - libcairo2
+      - "{{ 'libasound2t64' if ansible_distribution_major_version | int >= 24 else 'libasound2' }}"
+      - fonts-liberation
+    state: present
+  become: true
+  become_user: root
+  when:
+    - pi_install_browser
+    - pi_install_system_dependencies
+
+- name: Download browser for the Pi user
+  ansible.builtin.command:
+    argv:
+      - "{{ pi_install_dir }}/npm/bin/agent-browser"
+      - install
+  register: pi_browser_download
+  changed_when: "'installed successfully' in pi_browser_download.stdout"
+  when: pi_install_browser

@@ -4,18 +4,58 @@
   tags:
     - php_setup
 
-- name: Add PHP PPA repository key
-  ansible.builtin.get_url:
-    url: https://ppa.launchpadcontent.net/ondrej/php/ubuntu
-    dest: /etc/apt/trusted.gpg.d/php.asc
-    mode: "0644"
-    force: true
+- name: Validate PHP repository distribution
+  ansible.builtin.assert:
+    that:
+      - ansible_distribution == 'Ubuntu'
+      - ansible_distribution_release in ['jammy', 'noble']
+    fail_msg: The PHP PPA supports Jammy and Noble; newer Ubuntu releases require a reviewed Sury migration.
   tags:
     - php_setup
 
-- name: Setup PHP PPA
-  apt_repository:
-    repo: deb https://ppa.launchpadcontent.net/ondrej/php/ubuntu jammy main
+- name: Create APT keyring directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755"
+  tags:
+    - php_setup
+
+- name: Add PHP PPA repository key
+  ansible.builtin.get_url:
+    url: >-
+      https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xB8DC7E53946656EFBCE4C1DD71DAEAAB4AD4CAB6
+    dest: /etc/apt/keyrings/devbox-php.asc
+    checksum: sha256:1bed18eabeccc647b731492b1fbfcb1a916dc03d63557dc7e2c1007e79901a71
+    mode: "0644"
+  tags:
+    - php_setup
+
+- name: Remove legacy unscoped PHP repository entries
+  ansible.builtin.apt_repository:
+    repo: deb https://ppa.launchpadcontent.net/ondrej/php/ubuntu {{ item }} main
+    state: absent
+    update_cache: false
+  loop:
+    - jammy
+    - noble
+  tags:
+    - php_setup
+
+- name: Remove legacy globally trusted PHP key
+  ansible.builtin.file:
+    path: /etc/apt/trusted.gpg.d/php.asc
+    state: absent
+  tags:
+    - php_setup
+
+- name: Setup distribution-matched PHP PPA
+  ansible.builtin.apt_repository:
+    repo: >-
+      deb [signed-by=/etc/apt/keyrings/devbox-php.asc]
+      https://ppa.launchpadcontent.net/ondrej/php/ubuntu {{ ansible_distribution_release }} main
+    filename: devbox-php
+    update_cache: true
   tags:
     - php_setup
 

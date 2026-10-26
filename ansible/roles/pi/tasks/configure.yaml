@@ -1,0 +1,117 @@
+---
+- name: Inspect existing Pi configuration
+  ansible.builtin.stat:
+    path: "{{ pi_agent_dir }}/{{ item }}"
+  loop:
+    - settings.json
+    - mcp.json
+    - tasks-config.json
+  register: pi_config_files
+
+- name: Read existing Pi configuration
+  ansible.builtin.slurp:
+    src: "{{ item.stat.path }}"
+  loop: "{{ pi_config_files.results }}"
+  when: item.stat.exists
+  register: pi_config_contents
+  no_log: true
+
+- name: Initialize configuration merge
+  ansible.builtin.set_fact:
+    pi_existing_config: {}
+    pi_database_servers: {}
+
+- name: Decode existing Pi configuration
+  ansible.builtin.set_fact:
+    pi_existing_config: >-
+      {{ pi_existing_config | combine({item.item.item: item.content | b64decode | from_json}) }}
+  loop: "{{ pi_config_contents.results }}"
+  when: not item.skipped | default(false)
+  no_log: true
+
+- name: Register database MCP entries
+  ansible.builtin.set_fact:
+    pi_database_servers: >-
+      {{ pi_database_servers | combine({item.name: {
+        'command': pi_bin_dir ~ '/dbhub',
+        'args': ['--transport', 'stdio', '--config', pi_agent_dir ~ '/databases/' ~ item.name ~ '.toml'],
+        'enabled': item.enabled | default(false),
+        'exposure': 'deferred'
+      }}) }}
+  loop: "{{ pi_database_connections }}"
+  no_log: true
+
+- name: Validate database configuration names
+  ansible.builtin.assert:
+    that:
+      - item.name is match('^[a-zA-Z0-9_-]+$')
+      - item.name not in ['context7', 'agent-browser']
+      - item.dsn | length > 0
+  loop: "{{ pi_database_connections }}"
+  no_log: true
+
+- name: Write database connection configuration
+  ansible.builtin.template:
+    src: database.toml.j2
+    dest: "{{ pi_agent_dir }}/databases/{{ item.name }}.toml"
+    mode: "0600"
+  loop: "{{ pi_database_connections }}"
+  no_log: true
+
+- name: Create isolated SQLite scratch database
+  ansible.builtin.command:
+    argv:
+      - python3
+      - -c
+      - import sqlite3, sys; sqlite3.connect(sys.argv[1]).close()
+      - "{{ pi_agent_dir }}/databases/scratch.sqlite"
+    creates: "{{ pi_agent_dir }}/databases/scratch.sqlite"
+
+- name: Protect SQLite scratch database
+  ansible.builtin.file:
+    path: "{{ pi_agent_dir }}/databases/scratch.sqlite"
+    mode: "0600"
+
+- name: Merge Pi settings
+  ansible.builtin.template:
+    src: settings.json.j2
+    dest: "{{ pi_agent_dir }}/settings.json"
+    mode: "0600"
+  no_log: true
+
+- name: Merge MCP configuration
+  ansible.builtin.template:
+    src: mcp.json.j2
+    dest: "{{ pi_agent_dir }}/mcp.json"
+    mode: "0600"
+  no_log: true
+
+- name: Merge task settings
+  ansible.builtin.copy:
+    content: >-
+      {{ pi_existing_config.get('tasks-config.json', {}) | combine(pi_tasks_settings) | to_nice_json }}
+    dest: "{{ pi_agent_dir }}/tasks-config.json"
+    mode: "0600"
+
+- name: Install browser discovery skill
+  ansible.builtin.copy:
+    src: browser-SKILL.md
+    dest: "{{ pi_agent_dir }}/skills/agent-browser/SKILL.md"
+    mode: "0644"
+
+- name: Install maintenance command
+  ansible.builtin.template:
+    src: update.sh.j2
+    dest: "{{ pi_bin_dir }}/pi-devbox-update"
+    mode: "0755"
+
+- name: Schedule weekly user-owned updates
+  ansible.builtin.cron:
+    name: Update devbox Pi tools
+    user: "{{ pi_user }}"
+    weekday: "{{ pi_update_weekday }}"
+    hour: "{{ pi_update_hour }}"
+    minute: "{{ pi_update_minute }}"
+    job: "{{ (pi_bin_dir ~ '/pi-devbox-update') | quote }} >> {{ (pi_install_dir ~ '/update.log') | quote }} 2>&1"
+    state: "{{ 'present' if pi_update_schedule_enabled else 'absent' }}"
+  when: pi_install_system_dependencies or pi_update_schedule_enabled

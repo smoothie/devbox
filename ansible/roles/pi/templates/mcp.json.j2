@@ -1,0 +1,15 @@
+{% set managed = {
+  'context7': {
+    'command': pi_bin_dir ~ '/context7-mcp',
+    'env': pi_context7_env,
+    'exposure': 'deferred'
+  },
+  'agent-browser': {
+    'command': pi_bin_dir ~ '/agent-browser',
+    'args': ['mcp'],
+    'env': {'AGENT_BROWSER_CONTENT_BOUNDARIES': '1', 'AGENT_BROWSER_MAX_OUTPUT': '50000'},
+    'exposure': 'deferred'
+  }
+} %}
+{% set existing = pi_existing_config.get('mcp.json', {}) %}
+{{ existing | combine({'mcpServers': existing.get('mcpServers', {}) | combine(managed) | combine(pi_database_servers) | combine(pi_mcp_servers)}) | to_nice_json }}

@@ -1,0 +1,31 @@
+{% set existing = pi_existing_config.get('settings.json', {}) %}
+{% set wanted = {
+  'npm:@tintinweb/pi-tasks': pi_tasks_version,
+  'npm:@tintinweb/pi-subagents': pi_subagents_version
+} %}
+{% set merged = namespace(packages=[], seen=[]) %}
+{% for package in existing.get('packages', []) %}
+{% set source = package if package is string else package.source %}
+{% set match = namespace(identity=source) %}
+{% for name in wanted %}
+{% if source == name or source.startswith(name ~ '@') %}
+{% set match.identity = name %}
+{% endif %}
+{% endfor %}
+{% set identity = match.identity %}
+{% if identity in wanted %}
+{% set desired = identity if wanted[identity] == 'latest' else identity ~ '@' ~ wanted[identity] %}
+{% if identity not in merged.seen %}
+{% set merged.packages = merged.packages + [package | combine({'source': desired}) if package is mapping else desired] %}
+{% set merged.seen = merged.seen + [identity] %}
+{% endif %}
+{% else %}
+{% set merged.packages = merged.packages + [package] %}
+{% endif %}
+{% endfor %}
+{% for identity, version in wanted.items() %}
+{% if identity not in merged.seen %}
+{% set merged.packages = merged.packages + [identity if version == 'latest' else identity ~ '@' ~ version] %}
+{% endif %}
+{% endfor %}
+{{ existing | combine(pi_settings) | combine({'packages': merged.packages}) | to_nice_json }}

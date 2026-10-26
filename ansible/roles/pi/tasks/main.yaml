@@ -1,0 +1,55 @@
+---
+- name: Validate Pi platform
+  ansible.builtin.assert:
+    that:
+      - ansible_system == 'Linux'
+      - not pi_install_system_dependencies or ansible_distribution == 'Ubuntu'
+      - ansible_architecture in ['x86_64', 'aarch64']
+      - pi_home is match('^/')
+      - pi_agent_dir is match('^/')
+      - pi_install_dir is match('^/')
+      - pi_bin_dir is match('^/')
+      - pi_node_major | int >= 24
+
+- name: Install Pi system dependencies
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - xz-utils
+      - unzip
+      - python3
+      - cron
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+  become: true
+  when: pi_install_system_dependencies
+
+- name: Enable scheduled maintenance service
+  ansible.builtin.service:
+    name: cron
+    state: started
+    enabled: true
+  become: true
+  when:
+    - pi_install_system_dependencies
+    - pi_update_schedule_enabled
+
+- name: Configure Pi as its owner
+  become: true
+  become_user: "{{ pi_user }}"
+  environment:
+    HOME: "{{ pi_home }}"
+    PI_CODING_AGENT_DIR: "{{ pi_agent_dir }}"
+    PATH: "{{ pi_install_dir }}/node/bin:{{ pi_install_dir }}/npm/bin:{{ ansible_env.PATH }}"
+    npm_config_prefix: "{{ pi_install_dir }}/npm"
+    npm_config_legacy_peer_deps: "true"
+  block:
+    - name: Install Pi runtime and packages
+      ansible.builtin.import_tasks: install.yaml
+
+    - name: Configure Pi tools
+      ansible.builtin.import_tasks: configure.yaml
+
+    - name: Distribute project instructions
+      ansible.builtin.import_tasks: projects.yaml
