@@ -22,7 +22,7 @@
     - mariadb_setup
 
 - name: Set root PW
-  ansible.mysql.mysql_user:
+  community.mysql.mysql_user:
     name: "{{ mariadb_root_user }}"
     password: "{{ mariadb_root_password }}"
     login_user: "{{ mariadb_root_user }}"
@@ -56,7 +56,7 @@
     - mariadb_setup
 
 - name: Create privileged DB users
-  ansible.mysql.mysql_user:
+  community.mysql.mysql_user:
     host: "%"
     name: "{{ item.key }}"
     password: "{{ item.value.password }}"
@@ -68,7 +68,7 @@
     - mariadb_setup
 
 - name: Create $mariadb_databases
-  ansible.mysql.mysql_db:
+  community.mysql.mysql_db:
     name: "{{ mariadb_databases }}"
     state: present
     login_unix_socket: "{{ mariadb_unix_socket }}"
