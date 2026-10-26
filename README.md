@@ -34,6 +34,7 @@ this devbox.
         - [ ] with SSL support
     - Code
         - [x] PHP (5.6 - 8.5; legacy releases require explicit compatibility review)
+            - PHP 8.5 is execution-tested on Ubuntu 22.04 and 24.04; see the [PHP role guide](ansible/roles/php/README.md).
             - [x] XDebug support
             - [x] Composer
         - [x] JavaScript
@@ -146,6 +147,35 @@ See the [Pi role guide](ansible/roles/pi/README.md) for prerequisites, authentic
 database targets, updates, and default project instruction distribution.
 See the [maintenance review](docs/maintenance-review.md) for verified download fixes
 and remaining infrastructure upgrade risks.
+
+## Quality gates
+
+Docker Engine and GNU Make are the only host prerequisites for checks. The QA
+image pins Python, Ansible, lint tools, collections, and Galaxy roles; host Python
+and previously installed Ansible collections do not participate.
+
+```bash
+make check-ci
+```
+
+This is also the GitHub Actions entry point and must pass before every commit
+and push. It rebuilds the QA image without cache, runs strict YAML/Ansible checks,
+tests Pi privacy/configuration reconciliation, checks every supported PHP
+version's active template paths, and provisions the complete PHP 8.5 package set
+in fresh Ubuntu 22.04 and 24.04 containers. Each target must serve PHP through
+Apache/FPM, rerun unchanged, and recover a stopped FPM service.
+
+For shorter iterations, `make qa` runs static checks, `make test` runs isolated
+configuration/template tests, and `make test-php` runs real PHP acceptance tests.
+These targets allow Docker build caching but always include current source.
+The full gate normally takes about 8–12 minutes with available package mirrors.
+
+The PHP tests mount `DOCKER_SOCKET` (default `/var/run/docker.sock`) into the QA
+controller so it can create and clean up disposable sibling containers. Docker
+socket access is root-equivalent; only run trusted checkout contents. Tests do
+not bind host ports or change host services, and do not require privileged
+containers. Ubuntu images are digest-pinned; APT still resolves current packages.
+A full Vagrant boot and systemd boot behavior are separate acceptance tests.
 
 ## Contributing
 

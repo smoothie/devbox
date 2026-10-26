@@ -30,4 +30,6 @@
   version: v1.0.0
 
 - name: capitanh.openldap-ansible-role
-  version: master
+  src: https://github.com/capitanh/openldap-ansible-role.git
+  scm: git
+  version: e859b806e3819d0938c3c9967297ef09041901e5

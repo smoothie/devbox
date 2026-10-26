@@ -2,8 +2,10 @@
 set -euo pipefail
 
 script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-cd "$script_dir"
+cd "$script_dir/.."
 
-yamllint . --strict --config-file .yamllint.yaml
+yamllint . --strict --config-file ansible/.yamllint.yaml
+cd "$script_dir"
 ansible-playbook site.yaml --inventory development.ini.example --syntax-check
-ANSIBLE_DEPRECATION_WARNINGS=False ansible-lint site.yaml --config-file .ansible-lint
+ansible-lint site.yaml ../tests/php85.yaml roles/pi/tests/settings_smoke.yaml roles/nvm/tests/smoke.yaml \
+  --config-file .ansible-lint

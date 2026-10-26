@@ -11,3 +11,8 @@ All notable changes are documented in this file, following Keep a Changelog 1.1.
 - Weekly updates and independently versioned Node LTS runtime.
 - Allowlisted default project instructions with existing-file preservation and
   explicit replacement opt-in.
+
+### Changed
+
+- Ansible disables install telemetry and analytics by default, overriding existing
+  reporting settings and inherited telemetry opt-ins in managed launchers.

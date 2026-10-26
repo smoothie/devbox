@@ -10,7 +10,7 @@ or restarted during the review.
 | Area | Finding | Change |
 | --- | --- | --- |
 | Pi | No coding-agent provisioning role | Optional `pi` role with current tools, isolated Node 24 LTS, updates and project instruction rollout |
-| PHP download | Repository HTML was downloaded as an APT signing key | Download the current Launchpad key with a pinned SHA-256 checksum and a dedicated `signed-by` keyring |
+| PHP download | Repository HTML was downloaded as a key; subsequent live-key checksums failed on varying armor headers | Ship the reviewed public key and use a dedicated `signed-by` keyring |
 | PHP source | `jammy` was hard-coded irrespective of the host | Select Jammy or Noble from host facts; fail clearly on other releases |
 | nvm | Installer was pinned to v0.39.4, world-writable in shared `/tmp`, and successful runs were reported unchanged | v0.40.8, installed-version detection, user-owned private installer and real change reporting |
 | VM example | `ubuntu_version: 2004` did not match `ubuntu/<box>` naming or the Jammy default | Use `jammy64` consistently |
@@ -27,17 +27,23 @@ unnecessary.
 
 The [Launchpad API](https://api.launchpad.net/1.0/~ondrej/+archive/ubuntu/php)
 identifies signing fingerprint
-`B8DC7E53946656EFBCE4C1DD71DAEAAB4AD4CAB6`. The fetched ASCII key has SHA-256
-`1bed18eabeccc647b731492b1fbfcb1a916dc03d63557dc7e2c1007e79901a71`.
-Jammy and Noble `InRelease` files carry a valid signature from that key; they
-also carry a signature from an older key not included in the new single-key
-keyring. A key rotation or changed exported key content requires reviewing and
-updating the checksum instead of silently trusting changed bytes.
+`B8DC7E53946656EFBCE4C1DD71DAEAAB4AD4CAB6`. Live keyserver responses for this
+same fingerprint produced different SHA-256 values because armor headers varied;
+the initial checksum-pinned download failed during real provisioning. The role
+now ships the reviewed key without variable armor headers. Its SHA-256 is
+`17cee003e52c7d4f197804c59460839950634fc6b8141967ef343655668428ca` and is
+regression-tested. Jammy and Noble APT installations accepted this scoped key.
+Key rotation requires a deliberate review and update of the bundled public key.
 
 The Jammy and Noble PPA package indices were compared against the role's PHP
 8.3, 8.4 and 8.5 package names, including virtual `Provides`: no missing names
-were found. This is an availability check, not a complete APT installation or
-FPM behavior test.
+were found. That initial availability check was not an execution test. Follow-up
+acceptance now installs the complete PHP 8.5 package set on fresh Jammy and Noble,
+executes PHP 8.5.12 CLI/CGI/debugger/development binaries, validates Apache/FPM
+configuration and serves a real HTTP endpoint through the FPM socket. CLI and
+FPM both load the expected extension set and configured Xdebug port. The
+`php8.5-interbase` package supplies `pdo_firebird`, not `interbase`. Both unchanged
+reruns report `changed=0`, and both targets recover a deliberately stopped FPM.
 
 The PPA now states that Ubuntu Resolute should use the canonical
 [packages.sury.org](https://packages.sury.org/php/) repository. Jammy and Noble
@@ -48,8 +54,8 @@ codename is unsafe.
 The Apache `conf-available` template directory stops at PHP 8.3, but those files
 are not used by `roles/apache2/tasks/main.yaml`. Active vhosts interpolate their
 PHP socket directly, and PHP FPM/Xdebug templates already exist for 8.4 and 8.5.
-No missing-active-extractor-style conclusion or unnecessary template duplication
-is warranted.
+Automated template-path checks cover every declared supported PHP version;
+executable acceptance is specifically for PHP 8.5, not every legacy version.
 
 ## Remaining priorities
 
@@ -64,14 +70,15 @@ is warranted.
    skew to the actual cluster before updating; do not blindly choose `latest`.
    PHP 5.6–8.1 defaults remain legacy compatibility options and should not be
    interpreted as upstream security-supported releases.
-3. **Floating dependencies:** the LDAP Galaxy role tracks `master`, and other
-   download paths and Galaxy dependencies need a separate version/checksum
-   audit. New Pi packages default to automatic updates by request; controlled
-   environments should pin the versions and disable the weekly schedule.
-4. **Existing configuration defects:** Apache's group replacement currently
-   matches and rewrites `APACHE_RUN_USER`, not `APACHE_RUN_GROUP`. Docker's
-   `docker_config.install_compose | true` expression also needs runtime validation.
-   These paths are outside the Pi role and were not deployed or silently changed.
+3. **Dependency updates:** QA Python packages and Ansible collections are now
+   pinned; the LDAP role's floating `master` has been replaced with a commit.
+   Other runtime downloads still need a broader checksum audit. Pi packages
+   default to automatic updates by request; controlled environments should pin
+   versions and disable scheduling.
+4. **Existing configuration defects:** Docker's
+   `docker_config.install_compose | true` expression still needs runtime validation.
+   Apache's group replacement was fixed and exercised with a username different
+   from the group name. FPM socket permissions remain a separate hardening task.
 5. **Fresh-machine acceptance:** validate browser APT dependencies, cron, PHP
    repository migration and all enabled services together in a disposable VM.
    Existing-library smoke tests do not prove a clean machine's dependency graph.
@@ -87,14 +94,21 @@ is warranted.
   returned `SUBAGENT_OK`. The package pair loads on Pi 1.4.0.
 - `pi-devbox-update` was executed successfully against the isolated installation;
   wrapper scripts passed `bash -n`.
-- Full `qa.sh` gates passed in an LF-normalized checkout export: strict yamllint,
-  playbook syntax check, and ansible-lint with zero reported violations. The
-  initial clone retains its existing CRLF files until refreshed; running its
-  raw YAML checks before a line-ending refresh still reports those inherited
-  failures. No broad rewrite of unrelated source files was performed.
+- GitHub's newer MySQL collection exposed deprecated `community.mysql`
+  redirects missed by the original host's older dependencies. Both database
+  roles now use `ansible.mysql`, with a pinned collection installed explicitly.
+  `make check-ci` rebuilds the pinned Docker controller and invokes the same gates
+  locally and in Actions; no host Python or existing collections are used.
+- Pi writes `enableInstallTelemetry: false` and `enableAnalytics: false` on
+  Ansible runs, preserving unrelated settings. Managed processes also receive
+  `PI_TELEMETRY=false`. Regression tests cover prior opt-ins and deliberate opt-in
+  through the dedicated role variables.
 
 PostgreSQL, MySQL and MariaDB executables/configurations are installed, but no
 application credentials were assumed and no live network database was queried.
 Only the isolated SQLite database is enabled by default. Browser dependency APT
 installation and cron were deliberately disabled in the isolated smoke playbook.
-No full Vagrant boot or PHP package installation was performed.
+PHP package installation and Apache/FPM execution are now covered in disposable
+containers. No full Vagrant/systemd boot was performed. The PHP role still uses
+`apt_repository`, deprecated for removal in ansible-core 2.25; the pinned 2.21
+controller reports this separately from lint violations.

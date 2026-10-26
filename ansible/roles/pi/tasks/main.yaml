@@ -41,6 +41,7 @@
   environment:
     HOME: "{{ pi_home }}"
     PI_CODING_AGENT_DIR: "{{ pi_agent_dir }}"
+    PI_TELEMETRY: "{{ pi_enable_install_telemetry | bool | ternary('true', 'false') }}"
     PATH: "{{ pi_install_dir }}/node/bin:{{ pi_install_dir }}/npm/bin:{{ ansible_env.PATH }}"
     npm_config_prefix: "{{ pi_install_dir }}/npm"
     npm_config_legacy_peer_deps: "true"

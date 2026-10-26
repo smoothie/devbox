@@ -1,0 +1,189 @@
+---
+- name: Provision and verify PHP 8.5 through Apache and FPM
+  hosts: all
+  gather_facts: true
+  vars:
+    php_user: devboxphp
+    php_group: devboxweb
+    apache2_user: devboxphp
+    apache2_group: devboxweb
+    apache2_sites:
+      php85.test:
+        apache2_server_admin: root@localhost
+        apache2_document_root: /var/www/php85
+        php_version: "8.5"
+    php_xdebug:
+      mode: debug
+      client_host: 127.0.0.1
+      client_port: 19003
+      discover_client_host: 0
+      idekey: PHPSTORM
+      max_nesting_level: 512
+      start_with_request: trigger
+    php_expected_extensions:
+      - amqp
+      - bcmath
+      - bz2
+      - calendar
+      - ctype
+      - curl
+      - dba
+      - dom
+      - enchant
+      - exif
+      - ffi
+      - fileinfo
+      - ftp
+      - gd
+      - gettext
+      - gmp
+      - iconv
+      - imagick
+      - imap
+      - intl
+      - ldap
+      - mbstring
+      - memcached
+      - mysqli
+      - mysqlnd
+      - odbc
+      - pdo
+      - pdo_dblib
+      - pdo_firebird
+      - pdo_mysql
+      - pdo_odbc
+      - pdo_pgsql
+      - pdo_sqlite
+      - pgsql
+      - phar
+      - posix
+      - pspell
+      - readline
+      - redis
+      - shmop
+      - simplexml
+      - snmp
+      - soap
+      - sockets
+      - sqlite3
+      - sysvmsg
+      - sysvsem
+      - sysvshm
+      - tidy
+      - tokenizer
+      - xdebug
+      - xml
+      - xmlreader
+      - xmlrpc
+      - xmlwriter
+      - xsl
+      - zip
+      - zend opcache
+  pre_tasks:
+    - name: Create a web group distinct from the username
+      ansible.builtin.group:
+        name: devboxweb
+
+    - name: Create the web process user
+      ansible.builtin.user:
+        name: devboxphp
+        group: devboxweb
+        create_home: false
+
+    - name: Create the test document root
+      ansible.builtin.file:
+        path: /var/www/php85
+        state: directory
+        mode: "0755"
+
+    - name: Install the PHP acceptance endpoint
+      ansible.builtin.copy:
+        src: fixtures/php85.php
+        dest: /var/www/php85/index.php
+        mode: "0644"
+    - name: Install the Apache process identity assertion
+      ansible.builtin.copy:
+        src: fixtures/apache_identity.py
+        dest: /tmp/devbox-apache-identity.py
+        mode: "0644"
+  roles:
+    - role: php
+    - role: apache2
+  tasks:
+    - name: Apply pending service handlers before acceptance checks
+      ansible.builtin.meta: flush_handlers
+
+    - name: Check the PHP CLI and loaded extensions
+      ansible.builtin.command: php8.5 /var/www/php85/index.php
+      register: php_cli_result
+      changed_when: false
+
+    - name: Parse the CLI acceptance result
+      ansible.builtin.set_fact:
+        php_cli: "{{ php_cli_result.stdout | from_json }}"
+
+    - name: Verify the CLI runtime and every expected extension
+      ansible.builtin.assert:
+        fail_msg: >-
+          CLI missing extensions: {{ php_expected_extensions | difference(php_cli.extensions) }}; {{ php_cli }}
+        that:
+          - php_cli.version is match('^8[.]5[.]')
+          - php_cli.sapi == 'cli'
+          - php_expected_extensions | difference(php_cli.extensions) | length == 0
+          - php_cli.timezone == 'UTC'
+          - php_cli.memory_limit == '2048M'
+          - php_cli.xdebug_port == '19003'
+
+    - name: Execute the CGI debugger and development binaries
+      ansible.builtin.command: "{{ item }}"
+      loop:
+        - php-cgi8.5 --version
+        - phpdbg8.5 -V
+        - php-config8.5 --version
+        - phpize8.5 --version
+      changed_when: false
+
+    - name: Validate the installed FPM configuration
+      ansible.builtin.command: php-fpm8.5 --test
+      changed_when: false
+
+    - name: Validate the installed Apache configuration
+      ansible.builtin.command: apache2ctl configtest
+      changed_when: false
+
+    - name: Verify running Apache workers use the configured user and group
+      ansible.builtin.command:
+        argv:
+          - python3
+          - /tmp/devbox-apache-identity.py
+          - "{{ apache2_user }}"
+          - "{{ apache2_group }}"
+      register: apache2_identity_result
+      changed_when: false
+      retries: 5
+      delay: 1
+      until: apache2_identity_result.rc == 0
+
+    - name: Request PHP through the actual Apache virtual host and FPM socket
+      ansible.builtin.uri:
+        url: http://127.0.0.1/index.php
+        headers:
+          Host: php85.test
+        return_content: true
+      register: php_http_result
+      retries: 10
+      delay: 1
+      until: php_http_result.status == 200
+
+    - name: Verify the FPM response and all web extensions
+      ansible.builtin.assert:
+        fail_msg: >-
+          FPM missing extensions: {{ php_expected_extensions | difference(php_http_result.json.extensions) }};
+          {{ php_http_result.json }}
+        that:
+          - php_http_result.json.version is match('^8[.]5[.]')
+          - php_http_result.json.sapi == 'fpm-fcgi'
+          - php_expected_extensions | difference(php_http_result.json.extensions) | length == 0
+          - php_http_result.json.timezone == 'UTC'
+          - php_http_result.json.memory_limit == '2048M'
+          - php_http_result.json.xdebug_port == '19003'

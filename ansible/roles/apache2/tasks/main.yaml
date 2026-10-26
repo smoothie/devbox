@@ -12,16 +12,16 @@
     path: /etc/apache2/envvars
     regexp: ^(export APACHE_RUN_USER=).*$
     line: export APACHE_RUN_USER={{ apache2_user }}
-  notify: Reload apache2 service
+  notify: Restart apache2 service
   tags:
     - apache_setup
 
 - name: Replace apache2 group in envvars
   ansible.builtin.lineinfile:
     path: /etc/apache2/envvars
-    regexp: ^(export APACHE_RUN_USER=).*$
-    line: export APACHE_RUN_USER={{ apache2_group }}
-  notify: Reload apache2 service
+    regexp: ^(export APACHE_RUN_GROUP=).*$
+    line: export APACHE_RUN_GROUP={{ apache2_group }}
+  notify: Restart apache2 service
   tags:
     - apache_setup
 
@@ -30,6 +30,7 @@
     name: "{{ apache2_user }}"
     groups: "{{ apache2_group }}"
     append: true
+  notify: Restart apache2 service
   tags:
     - apache2_setup
 
